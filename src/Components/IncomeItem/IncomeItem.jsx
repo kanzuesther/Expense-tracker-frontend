@@ -1,5 +1,5 @@
 import React from 'react'
-import { calender, comment, freelance, money, dollar, trash, medical, yt } from '../../utils/Icons';
+import { calender, users,stocks,bitcoin,card,piggy,book,food, medical,tv, takeaway,clothing,circle,comment, freelance, money, dollar, trash, yt } from '../../utils/Icons';
 import styled from 'styled-components';
 import Button from '../Button/Button';
 
@@ -90,7 +90,10 @@ function IncomeItem({
                         bg={'var(--primary-color'}
                         color={'#fff'}
                         hColor={'var(--color-green'}
-                        onClick={() => deleteItem(id)}
+                        onClick={() => {
+                            console.log("id: ", id)
+                            deleteItem(id)
+                        }}
                     />
                 </div>
             </div>

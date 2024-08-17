@@ -23,7 +23,13 @@ function Form() {
     const handleSubmit = e => {
         e.preventDefault()
         addIncome(inputState)
-        getIncomes()
+        setInputState({
+            title: '',
+            amount: '',
+            date: '',
+            category: '',
+            description: '',
+        })
     }
     return (
         <FormStyled onSubmit={handleSubmit}>
@@ -77,8 +83,9 @@ function Form() {
                     name={'Add Income'}
                     icon={plus}
                     bPad={'.8rem 1.6rem'}
-                    bg={'var(--color-acent'}
+                    bg={'#222260'}
                     color={'#fff'}
+                    bRad={"36px"}
                 />
             </div>
         </FormStyled>
