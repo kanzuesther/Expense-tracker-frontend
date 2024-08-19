@@ -5,6 +5,7 @@ import "react-datepicker/dist/react-datepicker.css"
 import { useGlobalContext } from '../../context/globalContext';
 import { plus } from '../../utils/Icons';
 import Button from '../Button/Button';
+
 function ExpenseForm() {
     const {addExpense, error,setError} = useGlobalContext()
     const [inputState, setInputState] = useState({
@@ -132,4 +133,5 @@ button{
 box-shadow:0px 1px 15px rba(0, 0, 0, 0.06);
 &:hover{
 background:var(--color-green) !important}}}`;
-export default Form
+
+export default ExpenseForm;

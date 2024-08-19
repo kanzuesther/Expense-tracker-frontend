@@ -5,13 +5,14 @@ import { useGlobalContext } from '../../context/globalContext';
 import Form from '../Form/Form';
 import IncomeItem from '../IncomeItem/IncomeItem';
 import { expenses } from '../../utils/Icons';
+import ExpenseForm from './ExpenseForm';
 
 
 function Expenses() {
     const { addExpenses, expenses, getExpenses, deleteExpense, totalExpenses} = useGlobalContext()
 
     useEffect(() => {
-        getIncomes()
+        getExpenses()
     }, [])
 
     return (
@@ -36,7 +37,7 @@ function Expenses() {
                                 date={date}
                                 category={category}
                                 indicatorColor="var(--color-green)"
-                                deleteItem={deleteIncome}
+                                deleteItem={deleteExpense}
                             />
 
                         })}
