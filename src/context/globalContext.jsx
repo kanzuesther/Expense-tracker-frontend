@@ -76,7 +76,7 @@ export const GlobalProvider = ({ children }) => {
     const totalBalance = () =>{
         return totalIncome() - totalExpenses()
     }
-    const transactionsHistory = () =>{
+    const transactionHistory = () =>{
         const history =[...incomes, ...expenses];
         console.log("The history is: ");
         console.log(history);
@@ -98,7 +98,7 @@ export const GlobalProvider = ({ children }) => {
             getExpenses,
             totalExpenses,
             totalBalance,
-            transactionsHistory,
+            transactionHistory,
             error,
             setError
 
