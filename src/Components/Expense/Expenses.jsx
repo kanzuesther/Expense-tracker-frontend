@@ -4,33 +4,34 @@ import { InnerLayout } from '../../styles/Layouts';
 import { useGlobalContext } from '../../context/globalContext';
 import Form from '../Form/Form';
 import IncomeItem from '../IncomeItem/IncomeItem';
+import { expenses } from '../../utils/Icons';
 
 
-function Income() {
-    const { addIncome, incomes, getIncomes, deleteIncome, totalIncome} = useGlobalContext()
+function Expenses() {
+    const { addExpenses, expenses, getExpenses, deleteExpense, totalExpenses} = useGlobalContext()
 
     useEffect(() => {
         getIncomes()
     }, [])
 
     return (
-        <IncomeStyled>
+        <ExpenseStyled>
             <InnerLayout>
-                <h1>Incomes</h1>
-                <h2 className='total-income'>Total Income: <span>${totalIncome()}</span></h2>
+                <h1>Expenses</h1>
+                <h2 className='total-income'>Total Expense: <span>${totalExpenses()}</span></h2>
                 <div className="income-content">
                     <div className="form-container">
-                        <Form />
+                        <ExpenseForm />
                     </div>
                     <div className="incomes">
-                        {incomes.map((income) => {
+                        {expenses.map((income) => {
                             const { _id, title, amount, date, category, description, type} = income;
                             return <IncomeItem
                                 key={_id}
                                 id={_id}
                                 title={title}
                                 description={description}
-                                amount={amount} 
+                                amount={amount}
                                 type={type}
                                 date={date}
                                 category={category}
@@ -42,11 +43,11 @@ function Income() {
                     </div>
                 </div>
             </InnerLayout>
-        </IncomeStyled>
+        </ExpenseStyled>
     )
 }
 
-const IncomeStyled = styled.div`
+const ExpenseStyled = styled.div`
 display:flex;
 overflow:auto;
 
@@ -75,4 +76,4 @@ gap:2rem;
 flex:1;}}
 `;
 
-export default Income
+export default Expenses

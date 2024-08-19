@@ -24,4 +24,27 @@ body{
     overflow:hidden;
     color: rgba(34, 34, 96, .6);
 }
+
+h1,h2,h3,h4,h5,h6{
+color: var(--primary-color);}
+
+.error{
+color:red;
+animation: shake 0.5s ease-in-out;
+@keyframes shake{
+0%{
+transform:translatex(0);
+}
+25%{
+transform:translatex(10px);
+}
+55%{
+transform:translatex(-10px);
+}
+100%{
+transform:translatex(10px);
+}
+100%{
+transform:translatex(0px);
+
 `;
