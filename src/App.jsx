@@ -8,6 +8,7 @@ import Dashboard from "./Components/Dashboard/Dashboard";
 import Income from "./Components/Income/Income";
 import Expenses from "./Components/Expense/Expenses";
 import { useGlobalContext } from "./context/globalContext";
+import './index.css';
 
 function App() {
   const [active, setActive] = useState(1)
