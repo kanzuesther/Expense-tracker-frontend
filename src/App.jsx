@@ -4,11 +4,13 @@ import { MainLayout } from "./styles/Layouts";
 import Orb from "./Components/Orb/Orb";
 import Navigation from "./Components/Navigation/Navigation";
 import { useState, useMemo } from "react";
-import Dashboard from "./Components/Dashboard/Dashboard";
+import Dashboard from "./Components/Dashboard";
 import Income from "./Components/Income/Income";
 import Expenses from "./Components/Expense/Expenses";
 import { useGlobalContext } from "./context/globalContext";
 import './index.css';
+import Records from "./Components/Records";
+
 
 function App() {
   const [active, setActive] = useState(1)
@@ -33,18 +35,22 @@ function App() {
   }, []);
 
   return (
-    <AppStyled bg={bg} className="App">
-      {OrbMemo}
+    // <Dashboard/>
+    <Records />
+    // <AppStyled bg={bg} className="App">
+    //   {OrbMemo}
 
-      <MainLayout>
-        <Navigation active={active} setActive={setActive} />
-        <main>
-          {displayData()}
-        </main>
-      </MainLayout>
-    </AppStyled>
+    //   <MainLayout>
+    //     <Navigation active={active} setActive={setActive} />
+    //     <main>
+    //       {displayData()}
+    //     </main>
+    //   </MainLayout>
+    // </AppStyled>
   );
 }
+
+
 const AppStyled = styled.div`
   height: 100vh;
   background-image: url(${props => props.bg});
