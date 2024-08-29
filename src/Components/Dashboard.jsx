@@ -208,7 +208,7 @@ fill="white" fill-rule="evenodd" />
     </svg>
     return (
         <div className="w-screen h-screen bg-[#eef0f2] overflow-auto">
-          <Navigation />
+          <Navigation activeLink="dashboard" />
 
             <div className="bg-[#f9fbfd] w-full px-6 py-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                 <Account name={"Cash"} balance={"8,900"} currency={"FCFA"} icon={cashIcon} backgroundColor={"#00897b"} />

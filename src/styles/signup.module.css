@@ -1,0 +1,171 @@
+.signup_main{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-color: #fdf9fc;
+}
+.container_signup{
+    width: 380px;
+    height:90%;
+    border: 2px solid rgba(255, 255, 255, rgba(255, 255, 255, .2));
+    border: 1px solid rgb(186 104 200);
+    color: antiquewhite;
+    border-radius: 10px;
+    padding: 30px 40px;
+}
+/* form{
+    width: 90%;
+    height: 100%;
+} */
+
+.container_signup h1{
+    font-size: 36px;
+    text-align: center;
+    color: rgb(186 104 200)
+}
+
+.container_signup .input-box{
+    position: relative;
+    width: 90%;
+    height: 20px;
+    background: transparent;
+    margin: 30px 0;
+
+}
+
+.inputBox {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgb(186 104 200);
+    border-radius: 40px;
+    margin-bottom: 2%;
+}
+
+.inputBox:hover {
+    border: 2px solid rgb(134, 45, 150);
+}
+
+.input_field {
+    width: 90%;
+    height: 50px;
+    background: transparent;
+    border-radius: 40px;
+    font-size: 16px;
+    color: rgb(69 90 100);
+    outline: none;
+    box-shadow: none;
+}
+
+.input_field:focus {
+    outline: none;
+    box-shadow: none;
+    outline: none;
+    box-shadow: none;
+    border: 0;
+    appearance: none;
+}
+.input[type='date'] {
+    outline: none;
+    box-shadow: none;
+    border: 0;
+    appearance: none;
+}
+
+.inputBox input::placeholder {
+    color: black;
+}
+
+.inputBox input{
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    outline: none;
+    border: 2px solid rgba(255, 255, 255, .2);
+    border-radius: 5px;
+    font-size: 16px;
+    padding:10px;
+    justify-content: space-evenly;
+    color:black;
+}
+
+.icon {
+    font-size: 20px;
+    color: rgb(186 104 200);
+    padding-left: 2%;
+}
+
+.container_signup button {
+    width: 100%;
+    height: 45px;
+    background: rgb(186 104 200);
+    border: none;
+    outline: none;
+    border-radius: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    cursor: pointer;
+    font-size: 16px;
+    color: white;
+    font-weight: 700;
+}
+
+.container_signup button:hover {
+    background: rgb(155, 61, 172);
+}
+.image {
+    width: 40%;
+    height: 100%;
+    justify-items: center;
+}
+
+ .container_signup .remember-forgot{
+    display: flex;
+    justify-content: space-between;
+    font-size: 14.5px;
+    margin: -15px 0 15px;
+
+}
+
+.rememberForgot label input{
+    accent-color: #fff;
+    margin-right: 4px;
+
+}
+
+.rememberForgot a{
+    color: #fff;
+    text-decoration: none;
+
+}
+
+.rememberForgot a:hover{
+    text-decoration: underline;
+    
+}
+
+.container_signup .registerLink{
+    font-size: 14.5px;
+    text-align: center;
+    margin: 20px 0 15px;
+}
+
+.registerLink p{
+    color:black;
+}
+.registerLink p a {
+    color:rgb(69 90 100);
+    text-decoration: none;
+    font-weight: 600;
+
+}
+
+.registerLink p a:hover {
+    text-decoration: underline;
+    
+}

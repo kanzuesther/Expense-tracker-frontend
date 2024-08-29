@@ -1,0 +1,170 @@
+.main {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-color: #fdf9fc;
+}
+
+.wrapper {
+    width: 380px;
+    border: 2px solid rgba(255, 255, 255, rgba(255, 255, 255, .2));
+    border: 1px solid rgb(186 104 200);
+    color: antiquewhite;
+    border-radius: 10px;
+    padding: 30px 40px;
+}
+
+.wrapper h1 {
+    font-size: 36px;
+    text-align: center;
+    color: rgb(186 104 200);
+}
+
+.wrapper .inputBox {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    background: transparent;
+    margin: 30px 0;
+}
+
+.inputBox {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgb(186 104 200);
+    border-radius: 40px;
+    color:rgb(69 90 100);
+}
+
+.inputBox:hover {
+    border: 2px solid rgb(134, 45, 150);
+}
+
+.input_field {
+    width: 90%;
+    height: 100%;
+    background: transparent;
+    border-radius: 40px;
+    font-size: 16px;
+    color: rgb(69 90 100);
+    outline: none;
+    box-shadow: none;
+}
+
+.input_field:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.inputBox input::placeholder {
+    color: black;
+}
+
+.icon {
+    font-size: 16px;
+    color: rgb(186 104 200);
+}
+
+.wrapper .rememberForgot {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14.5px;
+    margin: -15px 0 15px;
+    color: black;
+}
+
+.rememberForgot label input {
+    accent-color: #fff;
+    margin-right: 4px;
+}
+
+.rememberForgot a {
+    color: #333;
+    text-decoration: none;
+}
+
+.rememberForgot a:hover {
+    text-decoration: underline;
+}
+
+.wrapper button {
+    width: 100%;
+    height: 45px;
+    background: rgb(186 104 200);
+    border: none;
+    outline: none;
+    border-radius: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    cursor: pointer;
+    font-size: 16px;
+    color: white;
+    font-weight: 700;
+}
+
+.wrapper button:hover {
+    background: rgb(155, 61, 172);
+}
+
+.wrapper .registerLink {
+    font-size: 14.5px;
+    text-align: center;
+    margin: 20px 0 15px;
+    color: black;
+}
+
+.registerLink p a {
+    color: rgb(69 90 100);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.registerLink p a:hover {
+    text-decoration: underline;
+}
+
+.registerLink p {
+    color: #333;
+}
+
+.rememberForgot a {
+    color: black !important;
+}
+
+.image {
+    width: 40%;
+    height: 100%;
+    justify-items: center;
+}
+
+input[type='text'], input[type='password'] {
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
+input[type='text']:focus, input[type='password']:focus {
+    outline: none;
+    box-shadow: none;
+}
+.checkinput{
+    border: 1px solid rgb(155, 61, 172);
+    outline: none;
+    box-shadow: none;
+}
+.checkinput:checked {
+    box-sizing: border-box;
+    padding: 0;
+    accent-color: rgb(155, 61, 172);
+    background-color: rgb(155, 61, 172);
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
