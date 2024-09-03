@@ -34,13 +34,13 @@ const Reminders = () => {
     return (
         <div className="w-screen h-screen bg-[#eef0f2] overflow-hidden">
             <Navigation activeLink="reminders" />
-            
+
 
             <div className="mt-4 px-6 flex-1 flex flex-row gap-3">
                 <div className="h-screen bg-[#fafbfd] w-1/5 p-3 rounded-md flex flex-col gap-[24px]">
                     <h5 className="text-2xl font-bold">Reminders</h5>
                     <button className="rounded-full px-3 py-1 bg-[#FFB74D] text-white" onClick={() => openModal()}>+ Add</button>
-                    
+
 
                 </div>
 
@@ -81,10 +81,10 @@ const Reminders = () => {
                                     </select>
                                     <label htmlFor="">Amount</label>
                                     <input id="amount" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                                    
+
                                     <label htmlFor="">Date</label>
-                                    <input id="date"  type='date' className  ="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                                    
+                                    <input id="date" type='date' className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+
                                     <label htmlFor="">Cycle</label>
                                     <select id="cycle" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full">
                                         <option selected>Daily</option>
@@ -92,6 +92,9 @@ const Reminders = () => {
                                         <option value="monthly">Monthly</option>
                                         <option value="yearly">Yearly</option>
                                     </select>
+                                    <div className="mt-2 flex flex-col items-center justify-center ">
+                                        <button className="text-white bg-[#3C5A64] w-full py-1 px-6 rounded-full">Add</button>
+                                    </div>
                                 </form>
                             </div>
 

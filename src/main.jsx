@@ -11,6 +11,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import CashReserves from './Components/CashReserves.jsx';
 import Budget from './Components/Budget.jsx';
 import Reminders from './Components/Reminders.jsx';
+import ForgotPassword from './Components/ForgotPassword.jsx';
+import ResetPassword from './Components/ResetPassword.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -27,6 +29,8 @@ root.render(
         <Route path="/cash-reserves" element={<CashReserves/>}/>
         <Route path="/budgets" element={<Budget />}/>
         <Route path="/reminders" element={<Reminders />}/>
+        <Route path="/forgot-password" element={<ForgotPassword />}/>
+        <Route path="/reset-password/:token" element={<ResetPassword />}/>
 
 
 
