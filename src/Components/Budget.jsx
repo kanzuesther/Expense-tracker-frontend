@@ -1,6 +1,8 @@
 import Navigation from "./Navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from 'react-modal';
+import { API_URL } from "../constants";
+import axios from "axios";
 
 const customStyles = {
     content: {
@@ -18,6 +20,62 @@ Modal.setAppElement('#root');
 const Budget = () => {
     let subtitle;
     const [modalIsOpen, setIsOpen] = useState(false);
+    const [name, setName] = useState("");
+    const [category, setCategory] = useState("");
+    const [cashreserve, setCashreserve] = useState("");
+    const [amount, setAmount] = useState("2000");
+    const [cycle, setCycle] = useState("Daily");
+
+    const [categories, setCategories] = useState([]);
+    const [cashReserves, setCashReserves] = useState([]);
+    const [currency, setCurrency] = useState("FCFA");
+
+    const [data, setData] = useState([]);
+
+    function addBudget() {
+        let formData = {
+            name, cashreserve, category, cycle,
+            amount, currency
+        }
+        console.log(`Posting..`)
+        console.log(formData)
+
+        axios.post(`${API_URL}/api/v1/add-budget`, formData).then((response) => {
+            console.log(response.data);
+
+            let dummy = data;
+            dummy.push(response.data.data);
+            setData(dummy)
+            closeModal()
+        })
+    }
+
+    useEffect(() => {
+        axios.get(`${API_URL}/api/v1/get-budget`)
+            .then((response) => {
+                console.log("Data gotten from API")
+                console.log(response.data);
+                setData(response.data)
+            })
+        axios.get(`${API_URL}/api/v1/get-cashreserves`)
+            .then((response) => {
+                console.log("Data gotten from API")
+                console.log(response.data);
+                setCashReserves(response.data)
+
+                setCashreserve(response.data[0]._id)
+            })
+
+        axios.get(`${API_URL}/api/v1/get-category`)
+            .then((response) => {
+                console.log("Data gotten from API")
+                console.log(response.data);
+                setCategories(response.data)
+
+                setCategory(response.data[0]._id)
+            })
+    }, []);
+
 
     function openModal() {
         setIsOpen(true);
@@ -55,6 +113,49 @@ const Budget = () => {
                             <span>35000</span>
                         </div>
                     </div>
+                    <div className="flex flex-col gap-3 mt-4">
+                        {
+                            data.map((e, index) => {
+                                return (
+                                    <div key={index} className=" flex flex-row justify-between items-center w-full px-6 py-3 rounded-md bg-white">
+                                        <div className="flex flex-row gap-3 items-center">
+                                            <button
+                                                onClick={() => {
+                                                    console.log("about to delete")
+                                                    axios.delete(`${API_URL}/api/v1/delete-budget/${e._id}`)
+                                                        .then((response) => {
+                                                            console.log("Deletion complete");
+                                                            let deletedData = response.data.data;
+
+                                                            let dummy = data;
+                                                            dummy = dummy.filter((e, index) => {
+                                                                return (
+                                                                    e._id !== deletedData._id
+                                                                )
+                                                            })
+                                                            setData(dummy)
+
+                                                        })
+                                                        .catch((response) => {
+                                                            console.log(response)
+                                                        })
+                                                }}>
+                                                <svg fill="grey" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.755,20.283,4,8H20L18.245,20.283A2,2,0,0,1,16.265,22H7.735A2,2,0,0,1,5.755,20.283ZM21,4H16V3a1,1,0,0,0-1-1H9A1,1,0,0,0,8,3V4H3A1,1,0,0,0,3,6H21a1,1,0,0,0,0-2Z" /></svg>
+                                            </button>
+                                            <p>{e.name}</p>
+
+                                        </div>
+                                        <div>
+                                            <p>{e.category}</p>
+                                        </div>
+                                        <div><p>{e.amount}</p></div>
+                                        <div><p>{e.cycle}</p></div>
+                                        <div><p>{e.cashreserve}</p></div>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
 
                     <Modal
                         isOpen={modalIsOpen}
@@ -69,40 +170,61 @@ const Budget = () => {
                         <div className="w-full h-full flex flex-row justify-center">
                             {/* form2 */}
                             <div className="w-full p-3 ">
-                                <form action="">
-                                    <label htmlFor="">Name:</label>
-                                    <input id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                <form onSubmit={(e) => {
+                                    e.preventDefault()
+                                    addBudget()
+                                }}>
+                                    <label htmlFor="">Name</label>
+                                    <input id="name" value={name} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        onChange={(e) => setName(e.target.value)}
+
+                                    />
 
                                     <label htmlFor="">Cash-Reserve</label>
-                                    <select id="cash-reserve" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full">
-                                        <option selected>Cash</option>
-                                        <option value="momo">Momo</option>
-                                        <option value="bank">Bank</option>
+                                    <select id="cash-reserve" value={cashreserve} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full"
+                                        onChange={(e) => {
+                                            console.log("Select changed value, the new value is ", e.target.value);
+                                            setCashreserve(e.target.value)
+                                        }}
+                                    >
+                                        {
+                                            cashReserves.map((e, index) => <option key={index} value={e._id}>{e.name}</option>)
+                                        }
                                     </select>
                                     <label htmlFor="">Category</label>
-                                    <select id="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full">
-                                        <option selected>Gift</option>
-                                        <option value="gift">Health</option>
-                                        <option value="transport">Transport</option>
-                                        <option value="internet">Internet</option>
-                                        <option value="phone">Phone</option>
-                                        <option value="savings">Savings</option>
+                                    <select id="category" value={category} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full"
+                                        onChange={(e) => {
+                                            console.log("Select changed value, the new value is ", e.target.value);
+                                            setCategory(e.target.value)
+                                        }}
+                                    >
+                                        {
+                                            categories.map((e, index) => <option key={index} value={e._id}>{e.name}</option>)
+                                        }
                                     </select>
 
-                                    <label htmlFor="">Threshold:</label>
-                                    <input id="threshold" placeholder="Budget limit" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                    <label htmlFor="">amount:</label>
+                                    <input id="amount" value={amount} placeholder="Budget limit" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        onChange={(e) => setAmount(e.target.value)}
+                                    />
 
                                     <label htmlFor="">Cycle</label>
-                                    <select id="cyvcle" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full">
+                                    <select id="cycle" value={cycle} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full"
+                                        onChange={(e) => {
+                                            console.log("Select changed value, the new value is ", e.target.value);
+                                            setCycle(e.target.value)
+                                        }}
+                                    >
                                         <option selected>Daily</option>
                                         <option value="weekly">Weekly</option>
                                         <option value="monthly">Monthly</option>
                                         <option value="yearly">Yearly</option>
                                     </select>
+                                    <div className="mt-2 flex flex-col items-center justify-center ">
+                                        <button className="text-white bg-[#3C5A64] w-full py-1 px-6 rounded-full">Add</button>
+                                    </div>
                                 </form>
-                                <div className="mt-2 flex flex-col items-center justify-center ">
-                                    <button className="text-white bg-[#3C5A64] w-full py-1 px-6 rounded-full">Add</button>
-                                </div>
+
                             </div>
 
 

@@ -1,5 +1,6 @@
 import React from 'react'
 import { LuLogOut } from 'react-icons/lu'
+import { Link } from 'react-router-dom'
 
 function Navigation({activeLink="dashboard"}) {
     const links = [
@@ -39,8 +40,8 @@ function Navigation({activeLink="dashboard"}) {
             <div className="flex flex-row items-center gap-3">
                 <p>K-Wallet</p>
                 {
-                    links.map((item) => (
-                        <a href={item.url} className={item.name === activeLink ? 'font-bold text-xl' : ''}>{item.text}</a>
+                    links.map((item,index) => (
+                    <a key={index} href={item.url} className={item.name === activeLink ? 'font-bold text-xl' : ''}>{item.text}</a>
                     ))
                 }
             </div>
@@ -53,7 +54,9 @@ function Navigation({activeLink="dashboard"}) {
                     <div className='mr-2 w-10 h-10 rounded-full bg-[#455A64] text-white shadow-lg flex items-center justify-center'>
                         <span>KK</span>
                     </div>
-                    <LuLogOut size={20} />
+                    <Link to="/login">
+                       <LuLogOut size={20} />
+                    </Link>
                 </div>
             </div>
         </div>

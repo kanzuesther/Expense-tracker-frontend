@@ -1,6 +1,8 @@
 import Navigation from "./Navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from 'react-modal';
+import axios from "axios";
+import { API_URL } from "../constants";
 
 const customStyles = {
     content: {
@@ -18,6 +20,46 @@ Modal.setAppElement('#root');
 const Reminders = () => {
     let subtitle;
     const [modalIsOpen, setIsOpen] = useState(false);
+    const [name, setName] = useState(false);
+    const [cycle, setCycle] = useState("Daily");
+    const [cashreserve, setCashreserve] = useState("Cash");
+    const [amount, setAmount] = useState(false);
+    const [date, setDate] = useState(false);
+
+    const [data, setData] = useState([]);
+    const [cashReserves, setCashReserves] = useState([]);
+
+
+    function addReminder() {
+        axios.post(`${API_URL}/api/v1/add-reminder`, {
+            name, cycle,date,amount,cashreserve
+        }).then((response) => {
+            console.log(response.data);
+
+            let dummy = data;
+            dummy.push(response.data.data);
+            setData(dummy)
+            closeModal()
+        })
+    }
+
+    useEffect(() => {
+        axios.get(`${API_URL}/api/v1/get-reminder`)
+            .then((response) => {
+                console.log("Data gotten from API")
+                console.log(response.data);
+                setData(response.data)
+            })
+            axios.get(`${API_URL}/api/v1/get-cashreserves`)
+            .then((response) => {
+                console.log("Data gotten from API")
+                console.log(response.data);
+                setCashReserves(response.data)
+
+                // setAccount(response.data[0]._id)
+            })
+    }, []);
+
 
     function openModal() {
         setIsOpen(true);
@@ -56,6 +98,47 @@ const Reminders = () => {
                         </div>
                     </div>
 
+                    <div className="flex flex-col gap-3 mt-4">
+                        {
+                            data.map((e, index) => {
+                                return (
+                                    <div key={index} className=" flex flex-row justify-between items-center w-full px-6 py-3 rounded-md bg-white">
+                                        <div className="flex flex-row gap-3 items-center">
+                                            <button 
+                                            onClick={()=>{
+                                                console.log("about to delete")
+                                                axios.delete(`${API_URL}/api/v1/delete-reminder/${e._id}`)
+                                                .then((response) => {
+                                                    console.log("Deletion complete");
+                                                    let deletedData = response.data.data;
+                                                    
+                                                    let dummy = data;
+                                                    dummy =dummy.filter((e,index)=>{
+                                                        return(
+                                                            e._id!==deletedData._id
+                                                        )
+                                                    })
+                                                    setData(dummy)
+
+                                                })
+                                                .catch((response)=>{
+                                                    console.log(response)
+                                                })
+                                            }}>
+                                                <svg fill="grey" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.755,20.283,4,8H20L18.245,20.283A2,2,0,0,1,16.265,22H7.735A2,2,0,0,1,5.755,20.283ZM21,4H16V3a1,1,0,0,0-1-1H9A1,1,0,0,0,8,3V4H3A1,1,0,0,0,3,6H21a1,1,0,0,0,0-2Z" /></svg>
+                                            </button>
+                                            <p>{e.name}</p>
+
+                                        </div>
+                                        <div>
+                                            <p>{e.cashreserve}</p>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+
                     <Modal
                         isOpen={modalIsOpen}
                         onAfterOpen={afterOpenModal}
@@ -69,7 +152,10 @@ const Reminders = () => {
                         <div className="w-full h-full flex flex-row justify-center">
                             {/* form2 */}
                             <div className="w-full p-3 ">
-                                <form action="">
+                                <form onSubmit={(e) => {
+                                    e.preventDefault()
+                                    addReminder()
+                                }}>
                                     <label htmlFor="">Name:</label>
                                     <input id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
 
