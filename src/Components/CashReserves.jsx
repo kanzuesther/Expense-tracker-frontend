@@ -88,24 +88,7 @@ const CashReserves = () => {
                                             <button
                                                 onClick={() => {
                                                     setDeleteModalIsOpen(true);
-                                                    // console.log("about to delete")
-                                                    // axios.delete(`${API_URL}/api/v1/delete-cashreserves/${e._id}`)
-                                                    //     .then((response) => {
-                                                    //         console.log("Deletion complete");
-                                                    //         let deletedData = response.data.data;
-
-                                                    //         let dummy = data;
-                                                    //         dummy = dummy.filter((e, index) => {
-                                                    //             return (
-                                                    //                 e._id !== deletedData._id
-                                                    //             )
-                                                    //         })
-                                                    //         setData(dummy)
-
-                                                    //     })
-                                                    //     .catch((response) => {
-                                                    //         console.log(response)
-                                                    //     })
+                                                    setSelectedId(e._id);
                                                 }}>
                                                 <svg fill="grey" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.755,20.283,4,8H20L18.245,20.283A2,2,0,0,1,16.265,22H7.735A2,2,0,0,1,5.755,20.283ZM21,4H16V3a1,1,0,0,0-1-1H9A1,1,0,0,0,8,3V4H3A1,1,0,0,0,3,6H21a1,1,0,0,0,0-2Z" /></svg>
                                             </button>
@@ -129,14 +112,39 @@ const CashReserves = () => {
                 onRequestClose={closeModal}
                 onSuccess={(response) => {
                     let dummy = data;
+                    console.log('In onSuccess, the response data is');
+                    console.log(response.data);
 
-                    dummy.push(response.data);
+                    dummy.push(response.data.data);
                     setData(dummy);
                     closeModal();
                 }}
             />
 
-            <DeleteModal isOpen={deleteModalIsOpen} onClose={() => setDeleteModalIsOpen(false)} />
+            <DeleteModal 
+                isOpen={deleteModalIsOpen} 
+                onRequestClose={() => setDeleteModalIsOpen(false)}
+                onDelete={() => {
+                    console.log("about to delete");
+                    axios.delete(`${API_URL}/api/v1/delete-cashreserves/${selectedId}`)
+                        .then((response) => {
+                            let deletedData = response.data.data;
+
+                            let dummy = data;
+                            dummy = dummy.filter((e) => {
+                                return (
+                                    e._id !== deletedData._id
+                                )
+                            })
+                            setData(dummy)
+                            
+                            setDeleteModalIsOpen(false);
+                        })
+                        .catch((response) => {
+                            console.log(response)
+                        })
+                }}
+            />
         </div>
     )
 }
