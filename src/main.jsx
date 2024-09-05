@@ -14,28 +14,29 @@ import Reminders from './Components/Reminders.jsx';
 import ForgotPassword from './Components/ForgotPassword.jsx';
 import ResetPassword from './Components/ResetPassword.jsx';
 
+import { IconContext } from 'react-icons';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <GlobalStyle />
     <GlobalProvider>
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />}/>
-        <Route path="/signup" element={<Signup />}/>
-        <Route path="/dashboard" element={<Dashboard />}/>
-        <Route path="/records" element={<Records />} />
-        <Route path="/cash-reserves" element={<CashReserves/>}/>
-        <Route path="/budgets" element={<Budget />}/>
-        <Route path="/reminders" element={<Reminders />}/>
-        <Route path="/forgot-password" element={<ForgotPassword />}/>
-        <Route path="/reset-password/:token" element={<ResetPassword />}/>
-
-
-
-      </Routes>
-    </Router>
+      <IconContext>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/records" element={<Records />} />
+            <Route path="/cash-reserves" element={<CashReserves />} />
+            <Route path="/budgets" element={<Budget />} />
+            <Route path="/reminders" element={<Reminders />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+          </Routes>
+        </Router>
+      </IconContext>
     </GlobalProvider>
   </React.StrictMode>
 );
