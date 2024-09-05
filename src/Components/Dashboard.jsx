@@ -3,8 +3,25 @@ import BalanceTrendCard from "./BalanceTrend/BalanceTrendCard"
 import CashFlowCard from "./CashFlowCard/CashFlowCard"
 import ExpenseStructureCard from "./ExpenseStructure/ExpenseStructure"
 import Navigation from "./Navigation"
+import CashReserveModal from './CashReserveModal'
+import { useState } from "react"
+
 
 const Dashboard = () => {
+    const [modalIsOpen,setModalIsOpen] = useState(false)
+
+    function openModal() {
+        console.log(`Setting isOpen to true`);
+        setModalIsOpen(true);
+    }
+
+    // function afterOpenModal() {
+    //     subtitle.style.color = '#000';
+    // }
+
+    function closeModal() {
+        setModalIsOpen(false);
+    }
     const cashIcon = <svg width="40px" height="40px" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
 
         <g id="a" />
@@ -203,13 +220,29 @@ const Dashboard = () => {
     </svg>
     return (
         <div className="w-screen h-screen bg-[#eef0f2] overflow-auto">
+            <CashReserveModal
+                isOpen={modalIsOpen}
+                // onAfterOpen={afterOpenModal}
+                onRequestClose={closeModal}
+                onSuccess={(response) => {
+                    // let dummy = data;
+                    // console.log('In onSuccess, the response data is');
+                    // console.log(response.data);
+
+                    // dummy.push(response.data.data);
+                    // setData(dummy);
+                    console.log("Cash reserve added successfully");
+                    closeModal();
+                }}
+            />  
           <Navigation activeLink="dashboard" />
 
             <div className="bg-[#f9fbfd] w-full px-6 py-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                 <Account name={"Cash"} balance={"8,900"} currency={"FCFA"} icon={cashIcon} backgroundColor={"#00897b"} />
                 <Account name={"Momo"} balance={"10,000"} currency={"FCFA"} icon={momoIcon} backgroundColor={"#aa47bc"} />
                 <Account name={"Bank"} balance={"20,000"} currency={"FCFA"} icon={cashIcon} backgroundColor={"#1356bf"} />
-                <div className="p-2 gap-2 bg-transparent border-2 border-dashed flex flex-col justify-center rounded-md items-center hover:cursor-pointer">
+                <div className="p-2 gap-2 bg-transparent border-2 border-dashed flex flex-col justify-center rounded-md items-center hover:cursor-pointer"
+                onClick={() => openModal()}>
                     <span>+Add Account</span>
                 </div>
             </div>

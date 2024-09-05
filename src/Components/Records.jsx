@@ -4,6 +4,10 @@ import Modal from 'react-modal';
 import { API_URL } from "../constants";
 import axios from "axios";
 import { Sidebar } from "flowbite-react";
+import { LuGift } from 'react-icons/lu'
+import { FiMoreVertical } from 'react-icons/fi'
+import { Dropdown } from "flowbite-react";
+import DeleteModal from "./DeleteModal";
 
 const customStyles = {
     content: {
@@ -29,17 +33,23 @@ const Records = () => {
     const [label, setLabel] = useState("Choose");
     const [date, setDate] = useState("9/9/2024");
     const [time, setTime] = useState("2 pm");
+    const [type, setType] = useState("expense")
     // const [title, setTitle] = u
 
     const [data, setData] = useState([]);
     const [cashReserves, setCashReserves] = useState([]);
     const [categories, setCategories] = useState([]);
 
+    const [selectedId, setSelectedId] = useState("");
+    const [deleteModalIsOpen, setDeleteModalIsOpen] = useState("");
+
+    const recordTypes = ["expense", "income", "transfer"];
+
 
     function addRecords() {
         const formData = {
             amount, currency, color, category, label, date, time,
-            sourceAccount: account
+            sourceAccount: account, type
         }
         axios.post(`${API_URL}/api/v1/add-expense`, formData).then((response) => {
             console.log(response.data);
@@ -102,7 +112,30 @@ const Records = () => {
         <div className="w-screen h-screen bg-[#eef0f2] overflow-hidden">
             <Navigation activeLink="records" />
 
+            <DeleteModal
+                isOpen={deleteModalIsOpen}
+                onRequestClose={() => setDeleteModalIsOpen(false)}
+                onDelete={() => {
+                    console.log("about to delete");
+                    axios.delete(`${API_URL}/api/v1/delete-expense/${selectedId}`)
+                        .then((response) => {
+                            let deletedData = response.data.data;
 
+                            let dummy = data;
+                            dummy = dummy.filter((e) => {
+                                return (
+                                    e._id !== deletedData._id
+                                )
+                            })
+                            setData(dummy)
+
+                            setDeleteModalIsOpen(false);
+                        })
+                        .catch((response) => {
+                            console.log(response)
+                        })
+                }}
+            />
 
             <div className="flex flex-row justify-between mt-4 px-6">
                 <select id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -173,7 +206,37 @@ const Records = () => {
                             data.map((e, index) => {
                                 return (
                                     <div key={index} className=" flex flex-row justify-between items-center w-full px-6 py-3 rounded-md bg-white">
-                                        <div className="flex flex-row gap-3 items-center">
+                                        <div className="flex flex-row gap-4 items-center">
+                                            <input checked id="checked-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+
+                                            <div className="rounded-full w-[30px] h-[30px] flex flex-row justify-center items-center bg-teal-600">
+                                                <LuGift color="white" size={20} />
+                                            </div>
+
+                                            <span>{e.category.name}</span>
+
+                                            <div className="flex flex-row gap-2 items-center">
+                                                <span className="w-[5px] h-[5px] rounded-full bg-blue-600"></span>
+                                                <span>{e.sourceAccount.name}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-row items-center gap-2">
+                                            <span className={`${e.type.toLowerCase() === 'income' ? 'text-green-500' : 'text-red-500'}`}>{e.type.toLowerCase() === 'expense' && '-'} {e.sourceAccount.currency} {e.amount}</span>
+
+                                            <Dropdown label="" dismissOnClick={false} renderTrigger={() => <div className="cursor-pointer">
+                                                <FiMoreVertical size={16} />
+                                            </div>}>
+                                                <Dropdown.Item onClick={() => {
+                                                    setSelectedId(e._id);
+                                                }}>Edit</Dropdown.Item>
+                                                <Dropdown.Item onClick={() => {
+                                                    setSelectedId(e._id);
+
+                                                    setDeleteModalIsOpen(true);
+                                                }}>Delete</Dropdown.Item>
+                                            </Dropdown>
+                                        </div>
+                                        {/* <div className="flex flex-row gap-3 items-center">
                                             <button
                                                 onClick={() => {
                                                     console.log("about to delete")
@@ -214,8 +277,7 @@ const Records = () => {
                                         </div>
                                         <div>
                                             <p>{e.time}</p>
-                                        </div>
-
+                                        </div> */}
                                     </div>
                                 )
                             })
@@ -234,11 +296,18 @@ const Records = () => {
                         </div>
                         <div className="w-full h-full flex flex-row justify-center">
                             <div className="w-3/5 flex flex-col gap-4">
-                                <div>
-                                    <div className="flex flex-row  border-2 border-red-50 rounded-md">
-                                        <span className="w-[80px] text-center border-r-2 border-red-50">Expense</span><span className="w-[80px] text-center  border-r-2 border-red-50">Income</span><span className="w-[80px] text-center">Transfer</span>
+                                <div className="bg-[#00897b] w-full p-3">
+                                    <div className="grid grid-cols-3 border-2 border-red-100 rounded-md">
+                                        {
+                                            recordTypes.map((item, index) => {
+                                                return <span onClick={() => setType(item)} key={index} className={`text-center ${type === item ? 'bg-white' : ''} ${index + 1 < recordTypes.length ? 'border-r-2' : ''} border-red-100 cursor-pointer`}>{item[0].toUpperCase() + item.substring(1)}</span>
+                                            })
+                                        }
+                                        {/* <span className="text-center border-r-2 border-red-100">Expense</span>
+                                        <span className="text-center  border-r-2 border-red-100">Income</span>
+                                        <span className="text-center">Transfer</span> */}
                                     </div>
-                                    <div className="justify-center items-center">
+                                    <div className="justify-center items-center mt-2">
                                         <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Account</label>
                                         <select id="countries" value={account} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                             onChange={(e) => {
