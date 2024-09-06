@@ -42,8 +42,14 @@ const Records = () => {
 
     const [selectedId, setSelectedId] = useState("");
     const [deleteModalIsOpen, setDeleteModalIsOpen] = useState("");
+    const [total,setTotal]= useState(0);
+
 
     const recordTypes = ["expense", "income", "transfer"];
+
+    function formatNumber(number) {
+        return new Intl.NumberFormat().format(number);
+      }
 
 
     function addRecords() {
@@ -74,6 +80,11 @@ const Records = () => {
                 console.log("Data gotten from API")
                 console.log(response.data);
                 setData(response.data);
+                let total =0;
+                response.data.forEach((e,index)=>{
+                    total += e.amount;
+                })
+                setTotal(total)
             });
 
         axios.get(`${API_URL}/api/v1/get-cashreserves`)
@@ -197,7 +208,7 @@ const Records = () => {
                         </div>
                         <div>
                             <span>FCFA</span>
-                            <span>35000</span>
+                            <span>{formatNumber(total)}</span>
                         </div>
                     </div>
 
@@ -213,15 +224,15 @@ const Records = () => {
                                                 <LuGift color="white" size={20} />
                                             </div>
 
-                                            <span>{e.category.name}</span>
+                                            <span>{e.category?.name}</span>
 
                                             <div className="flex flex-row gap-2 items-center">
                                                 <span className="w-[5px] h-[5px] rounded-full bg-blue-600"></span>
-                                                <span>{e.sourceAccount.name}</span>
+                                                <span>{e?.sourceAccount?.name}</span>
                                             </div>
                                         </div>
                                         <div className="flex flex-row items-center gap-2">
-                                            <span className={`${e.type.toLowerCase() === 'income' ? 'text-green-500' : 'text-red-500'}`}>{e.type.toLowerCase() === 'expense' && '-'} {e.sourceAccount.currency} {e.amount}</span>
+                                            <span className={`${e.type.toLowerCase() === 'income' ? 'text-green-500' : 'text-red-500'}`}>{e.type.toLowerCase() === 'expense' && '-'} {e.sourceAccount.currency} { formatNumber(e.amount)}</span>
 
                                             <Dropdown label="" dismissOnClick={false} renderTrigger={() => <div className="cursor-pointer">
                                                 <FiMoreVertical size={16} />

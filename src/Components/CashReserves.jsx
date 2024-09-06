@@ -5,6 +5,8 @@ import Modal from 'react-modal';
 import { API_URL } from "../constants";
 import CashReserveModal from "./CashReserveModal";
 import DeleteModal from "./DeleteModal";
+import { FiMoreVertical } from 'react-icons/fi'
+import { Dropdown } from "flowbite-react";
 
 const customStyles = {
     content: {
@@ -25,6 +27,8 @@ const CashReserves = () => {
     const [data, setData] = useState([]);
     const [selectedId, setSelectedId] = useState("");
     const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
+    const [total, setTotal] = useState(0);
+
 
     useEffect(() => {
         axios.get(`${API_URL}/api/v1/get-cashreserves`)
@@ -32,9 +36,18 @@ const CashReserves = () => {
                 console.log("Data gotten from API")
                 console.log(response.data);
                 setData(response.data)
+                let total = 0;
+                response.data.forEach((e, index) => {
+                    let balanceNumber = Number(e.balance);
+                    total += balanceNumber;
+                })
+                setTotal(total)
             })
     }, []);
 
+    function formatNumber(number) {
+        return new Intl.NumberFormat().format(number);
+    }
 
     function openModal() {
         console.log(`Setting isOpen to true`);
@@ -70,7 +83,7 @@ const CashReserves = () => {
                         </div>
                         <div>
                             <span>FCFA</span>
-                            <span>35000</span>
+                            <span>{formatNumber(total)}</span>
                         </div>
                     </div>
 
@@ -80,18 +93,27 @@ const CashReserves = () => {
                                 return (
                                     <div key={index} className=" flex flex-row justify-between items-center w-full px-6 py-3 rounded-md bg-white">
                                         <div className="flex flex-row gap-3 items-center">
-                                            <button
-                                                onClick={() => {
-                                                    setDeleteModalIsOpen(true);
-                                                    setSelectedId(e._id);
-                                                }}>
-                                                <svg fill="grey" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.755,20.283,4,8H20L18.245,20.283A2,2,0,0,1,16.265,22H7.735A2,2,0,0,1,5.755,20.283ZM21,4H16V3a1,1,0,0,0-1-1H9A1,1,0,0,0,8,3V4H3A1,1,0,0,0,3,6H21a1,1,0,0,0,0-2Z" /></svg>
-                                            </button>
+                                            <input checked id="checked-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
                                             <p>{e.name}</p>
 
                                         </div>
-                                        <div>
-                                            <p>{e.balance}</p>
+                                        <div className="flex flex-row items-center gap-2">
+                                            <Dropdown label="" dismissOnClick={false} renderTrigger={() => <div className="cursor-pointer flex flex-row gap-2 items-center">
+                                                <div className="flex flex-row ">
+                                                    <p>{e.currency}</p>
+                                                    <p>{formatNumber(e.balance)}</p>
+                                                </div>
+                                                <FiMoreVertical size={16} />
+                                            </div>}>
+                                                <Dropdown.Item onClick={() => {
+                                                    setSelectedId(e._id);
+                                                }}>Edit</Dropdown.Item>
+                                                <Dropdown.Item onClick={() => {
+                                                    setSelectedId(e._id);
+
+                                                    setDeleteModalIsOpen(true);
+                                                }}>Delete</Dropdown.Item>
+                                            </Dropdown>
                                         </div>
                                     </div>
                                 )
@@ -116,8 +138,8 @@ const CashReserves = () => {
                 }}
             />
 
-            <DeleteModal 
-                isOpen={deleteModalIsOpen} 
+            <DeleteModal
+                isOpen={deleteModalIsOpen}
                 onRequestClose={() => setDeleteModalIsOpen(false)}
                 onDelete={() => {
                     console.log("about to delete");
@@ -132,7 +154,7 @@ const CashReserves = () => {
                                 )
                             })
                             setData(dummy)
-                            
+
                             setDeleteModalIsOpen(false);
                         })
                         .catch((response) => {
