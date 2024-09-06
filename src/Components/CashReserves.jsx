@@ -22,11 +22,6 @@ Modal.setAppElement('#root');
 const CashReserves = () => {
     let subtitle;
     const [modalIsOpen, setIsOpen] = useState(false);
-    const [name, setName] = useState("Cash");
-    const [balance, setBalance] = useState("");
-    const [currency, setCurrency] = useState("FCFA");
-    const [color, setColor] = useState("Red");
-
     const [data, setData] = useState([]);
     const [selectedId, setSelectedId] = useState("");
     const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
