@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import Modal from "react-modal";
 import { API_URL } from "../constants";
+import ColorSelector from "./ColorSelector";
 
 const customStyles = {
     content: {
@@ -44,10 +45,6 @@ const CashReserveModal = ({
             onSuccess(response);
         })
     }
-
-    useEffect(() => {
-        console.log(`In CashReserveModal isOpen changed: isOpen: ${isOpen}`)
-    }, [isOpen]);
 
     return (
         <Modal
@@ -99,15 +96,7 @@ const CashReserveModal = ({
 
 
                         <label htmlFor="">Color</label>
-                        <select id="color" value={colorState} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full"
-                            onChange={(e) => setColor(e.target.value)}
-                        >
-                            <option selected>Red</option>
-                            <option value="blue">Blue</option>
-                            <option value="yellow">Yellow</option>
-                            <option value="green">Green</option>
-                            <option value="pink">Pink</option>
-                        </select>
+                        <ColorSelector onColorSelect={(color) => setColor(color)} />
 
                         <div className="mt-2 flex flex-col items-center justify-center ">
                             <button className="text-white bg-[#3C5A64] w-full py-1 px-6 rounded-full">Add</button>
