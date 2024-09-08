@@ -15,10 +15,6 @@ const Dashboard = () => {
         setModalIsOpen(true);
     }
 
-    // function afterOpenModal() {
-    //     subtitle.style.color = '#000';
-    // }
-
     function closeModal() {
         setModalIsOpen(false);
     }
@@ -219,7 +215,7 @@ const Dashboard = () => {
         </g>
     </svg>
     return (
-        <div className="w-screen h-screen bg-[#eef0f2] overflow-auto">
+        <div className="w-screen h-screen bg-[#eef0f2] overflow-auto pb-3">
             <CashReserveModal
                 isOpen={modalIsOpen}
                 // onAfterOpen={afterOpenModal}
@@ -237,7 +233,7 @@ const Dashboard = () => {
             />  
           <Navigation activeLink="dashboard" />
 
-            <div className="bg-[#f9fbfd] w-full px-6 py-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+            <div className="bg-[#f9fbfd] w-full px-3 md:px-6 xl:px-[80px] py-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                 <Account name={"Cash"} balance={"8,900"} currency={"FCFA"} icon={cashIcon} backgroundColor={"#00897b"} />
                 <Account name={"Momo"} balance={"10,000"} currency={"FCFA"} icon={momoIcon} backgroundColor={"#aa47bc"} />
                 <Account name={"Bank"} balance={"20,000"} currency={"FCFA"} icon={cashIcon} backgroundColor={"#1356bf"} />
@@ -256,7 +252,7 @@ const Dashboard = () => {
                     <option value="DE">Germany</option>
                 </select>
             </div>
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 px-6 gap-3">
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 px-3 md:px-6 xl:px-[80px] gap-3">
                 <ExpenseStructureCard />
                 <CashFlowCard />
                 <BalanceTrendCard />

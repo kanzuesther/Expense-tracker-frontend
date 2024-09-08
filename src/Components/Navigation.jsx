@@ -1,8 +1,13 @@
 import React from 'react'
 import { LuLogOut } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
+import { MdAdd } from 'react-icons/md';
+import { FaBars } from 'react-icons/fa';
+import { Drawer } from 'flowbite-react';
 
-function Navigation({activeLink="dashboard"}) {
+import { useState } from 'react';
+
+function Navigation({ activeLink = "dashboard" }) {
     const links = [
         {
             id: 1,
@@ -35,18 +40,24 @@ function Navigation({activeLink="dashboard"}) {
             url: "/reminders"
         }
     ]
+
+    const [drawerIsOpen, setDrawerIsOpen] = useState(false);
+
     return (
-        <div className="w-full px-6 py-3 bg-white flex flex-row justify-between items-center">
+        <div className="w-full px-3 md:px-6 xl:px-[80px] py-2 md:py-3 bg-white flex flex-row justify-between items-center">
             <div className="flex flex-row items-center gap-3">
+                <button className='md:hidden' onClick={() => setDrawerIsOpen(true)}>
+                    <FaBars />
+                </button>
                 <p>K-Wallet</p>
                 {
-                    links.map((item,index) => (
-                    <a key={index} href={item.url} className={item.name === activeLink ? 'font-bold text-xl' : ''}>{item.text}</a>
+                    links.map((item, index) => (
+                        <a key={index} href={item.url} className={`hidden md:block ${item.name === activeLink ? 'font-bold text-xl' : ''}`}>{item.text}</a>
                     ))
                 }
             </div>
             <div className="flex flex-row items-center gap-3">
-                <button className="rounded-md px-3 py-1 text-white font-medium text-lg bg-[#455A64]">
+                <button className="rounded-md px-3 py-1 text-white font-medium text-lg bg-[#455A64] hidden md:block">
                     <span>+</span>
                     <span>{" "}Record</span>
                 </button>
@@ -55,10 +66,27 @@ function Navigation({activeLink="dashboard"}) {
                         <span>KK</span>
                     </div>
                     <Link to="/login">
-                       <LuLogOut size={20} />
+                        <LuLogOut size={20} />
                     </Link>
                 </div>
             </div>
+
+            <button className='md:hidden h-[40px] w-[40px] bg-[#455A64] rounded-full fixed right-6 bottom-3 text-white shadow-lg flex flex-col justify-center items-center'>
+                <MdAdd color='white' size={32} />
+            </button>
+
+            <Drawer open={drawerIsOpen} onClose={() => setDrawerIsOpen(false)}>
+                <Drawer.Header title="Menu" titleIcon={() => <></>} />
+                <Drawer.Items>
+                    <div className='w-full flex flex-col items-center'>
+                        {
+                            links.map((item, index) => (
+                                <a key={index} href={item.url} className={`w-full text-center py-2 rounded-md md:block ${item.name === activeLink ? 'bg-teal-50' : ''}`}>{item.text}</a>
+                            ))
+                        }
+                    </div>
+                </Drawer.Items>
+            </Drawer>
         </div>
     )
 }

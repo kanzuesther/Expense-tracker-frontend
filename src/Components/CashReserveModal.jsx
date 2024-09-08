@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Modal from "react-modal";
 import { API_URL } from "../constants";
 import ColorSelector from "./ColorSelector";
+import { IconSelector } from "./IconSelector/IconSelector";
 
 const customStyles = {
     content: {
@@ -97,6 +98,9 @@ const CashReserveModal = ({
 
                         <label htmlFor="">Color</label>
                         <ColorSelector onColorSelect={(color) => setColor(color)} />
+
+                        <label>Icon</label>
+                        <IconSelector />
 
                         <div className="mt-2 flex flex-col items-center justify-center ">
                             <button className="text-white bg-[#3C5A64] w-full py-1 px-6 rounded-full">Add</button>
