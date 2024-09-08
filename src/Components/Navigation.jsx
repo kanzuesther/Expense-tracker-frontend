@@ -1,7 +1,6 @@
 import React from 'react'
 import { LuLogOut } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
-import { MdAdd } from 'react-icons/md';
 import { FaBars } from 'react-icons/fa';
 import { Drawer } from 'flowbite-react';
 
@@ -70,10 +69,6 @@ function Navigation({ activeLink = "dashboard" }) {
                     </Link>
                 </div>
             </div>
-
-            <button className='md:hidden h-[40px] w-[40px] bg-[#455A64] rounded-full fixed right-6 bottom-3 text-white shadow-lg flex flex-col justify-center items-center'>
-                <MdAdd color='white' size={32} />
-            </button>
 
             <Drawer open={drawerIsOpen} onClose={() => setDrawerIsOpen(false)}>
                 <Drawer.Header title="Menu" titleIcon={() => <></>} />

@@ -9,7 +9,7 @@ const Account = ({ name, balance, currency, icon, backgroundColor }) => {
                 <span className="font-bold text-2xl">{currency} {balance}</span>
             </div>
 
-            <div className='absolute hidden top-2 right-2 group-hover:block'>
+            <div className='absolute hidden top-2 right-2 md:group-hover:block'>
                 <FaPen />
             </div>
         </div>

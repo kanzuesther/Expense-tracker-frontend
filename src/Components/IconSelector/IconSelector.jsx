@@ -6,9 +6,10 @@ import { categories } from "./iconNames";
 import IconRenderer from "../IconRenderer";
 
 export const IconSelector = ({
-    onIconSelect
+    onIconSelect,
+    icon = null
 }) => {
-    const [selectedIcon, setSelectedIcon] = useState(categories[0]);
+    const [selectedIcon, setSelectedIcon] = useState(icon ? icon : categories[0]);
 
     useEffect(() => {
         try {
@@ -20,15 +21,15 @@ export const IconSelector = ({
 
     return (
         <Dropdown label="" placement="bottom" dismissOnClick={true} renderTrigger={() => (
-            <div className="w-full p-3 flex flex-row gap-1 rounded-md border border-gray-300 items-center cursor-pointer">
-                <div className="mb-2" style={{ transition: 'transform 100ms' }}>
+            <div className="w-full p-2 flex flex-row gap-1 rounded-md border border-gray-300 items-center cursor-pointer justify-between">
+                <div style={{ transition: 'transform 100ms' }}>
                     <span>
                         <div
-                            className="p-2 flex items-center justify-center cursor-pointer relative rounded-full"
+                            className="p-1 flex items-center justify-center cursor-pointer relative rounded-full"
                             style={{ boxShadow: `#26c6da 0px 0px 0px 15px inset`, transition: 'box-shadow 100ms' }}
                             title={selectedIcon}
                         >
-                            <IconRenderer name={selectedIcon} size={28} />
+                            <IconRenderer name={selectedIcon} size={20} />
                         </div>
                     </span>
                 </div>

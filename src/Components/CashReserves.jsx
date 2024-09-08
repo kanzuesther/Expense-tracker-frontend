@@ -1,10 +1,11 @@
 import axios from "axios";
 import Navigation from "./Navigation";
 import { useState, useEffect } from "react";
-import Modal from 'react-modal';
+// import Modal from 'react-modal';
 import { API_URL } from "../constants";
 import CashReserveModal from "./CashReserveModal";
 import DeleteModal from "./DeleteModal";
+import { MdAdd } from "react-icons/md";
 
 const customStyles = {
     content: {
@@ -17,7 +18,7 @@ const customStyles = {
         backgroundColor: 'whitesmoke'
     },
 };
-Modal.setAppElement('#root');
+// Modal.setAppElement('#root');
 
 const CashReserves = () => {
     let subtitle;
@@ -53,9 +54,8 @@ const CashReserves = () => {
         <div className="w-screen h-screen bg-[#eef0f2] overflow-hidden">
             <Navigation activeLink="cash-reserves" />
 
-
             <div className="mt-4 px-6 flex-1 flex flex-row gap-3">
-                <div className="h-screen bg-[#fafbfd] w-1/5 p-3 rounded-md flex flex-col gap-[24px]">
+                <div className="hidden md:block h-screen bg-[#fafbfd] w-1/5 p-3 rounded-md flex flex-col gap-[24px]">
                     <h5 className="text-2xl font-bold">CashReserves</h5>
                     <button className="rounded-full px-3 py-1 bg-[#FFB74D] text-white" onClick={() => openModal()}>+ Add</button>
 
@@ -98,6 +98,10 @@ const CashReserves = () => {
                             })
                         }
                     </div>
+
+                    <button onClick={openModal} className='md:hidden h-[40px] w-[40px] bg-[#455A64] rounded-full fixed right-6 bottom-3 text-white shadow-lg flex flex-col justify-center items-center'>
+                        <MdAdd color='white' size={32} />
+                    </button>
                 </div>
             </div>
 
@@ -116,8 +120,8 @@ const CashReserves = () => {
                 }}
             />
 
-            <DeleteModal 
-                isOpen={deleteModalIsOpen} 
+            <DeleteModal
+                isOpen={deleteModalIsOpen}
                 onRequestClose={() => setDeleteModalIsOpen(false)}
                 onDelete={() => {
                     console.log("about to delete");
@@ -132,7 +136,7 @@ const CashReserves = () => {
                                 )
                             })
                             setData(dummy)
-                            
+
                             setDeleteModalIsOpen(false);
                         })
                         .catch((response) => {
