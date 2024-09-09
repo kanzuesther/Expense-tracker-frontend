@@ -2,6 +2,8 @@ import React from 'react';
 // Import the icons from react-icons
 import { FaHome, FaShoppingBasket, FaBus, FaGasPump, FaCar, FaHeartbeat, FaFileMedical, FaTshirt, FaFilm, FaWifi, FaMobileAlt, FaTv, FaGraduationCap, FaCreditCard, FaPiggyBank, FaGift, FaPaw, FaDumbbell, FaTools, FaPlane, FaBook, FaPen, FaBalanceScale, FaCalculator, FaBriefcase, FaCut, FaPuzzlePiece, FaLaptop, FaCouch, FaPaintBrush, FaSeedling, FaBasketballBall, FaTicketAlt, FaParking, FaRoad, FaEnvelope, FaMoneyBillWave, FaUniversity, FaRing, FaChild, FaCross, FaBabyCarriage, FaIdCard, FaLock, FaBug, FaWarehouse, FaFire, FaTint, FaTrashAlt, FaSnowflake, FaWrench, FaHeart, FaWheelchair, FaUserSecret, FaGavel, FaEye, FaTooth, FaCapsules, FaBrain, FaSpa, FaHandHoldingMedical, FaLeaf, FaPrayingHands, FaVoteYea, FaChartPie, FaSchool, FaPencilAlt, FaWallet, FaBullhorn, FaCode, FaCloud, FaDatabase, FaVideo, FaLaptopCode } from 'react-icons/fa';
 import { MdElectricalServices, MdRestaurantMenu, MdSubscriptions } from 'react-icons/md';
+import { FaPlus, FaMinus } from 'react-icons/fa';
+
 
 const IconRenderer = ({ size = 50, backgroundColor = '#f0f0f0', name = 'Rent/Mortgage' }) => {
     let IconComponent;
@@ -133,6 +135,12 @@ const IconRenderer = ({ size = 50, backgroundColor = '#f0f0f0', name = 'Rent/Mor
             break;
         case 'online courses':
             IconComponent = FaLaptopCode;
+            break;
+        case 'plus':
+            IconComponent= FaPlus;
+            break;
+        case 'minus':
+            IconComponent = FaMinus;
             break;
         // Add more categories and icons as needed
         default:

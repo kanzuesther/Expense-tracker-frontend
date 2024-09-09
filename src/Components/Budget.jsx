@@ -3,6 +3,10 @@ import { useState, useEffect } from "react";
 import Modal from 'react-modal';
 import { API_URL } from "../constants";
 import axios from "axios";
+import { Dropdown } from "flowbite-react";
+import { FiMoreVertical } from 'react-icons/fi'
+import DeleteModal from "./DeleteModal";
+
 
 const customStyles = {
     content: {
@@ -27,14 +31,18 @@ const Budget = () => {
     const [cycle, setCycle] = useState("Daily");
 
     const [categories, setCategories] = useState([]);
+    const [selectedId, setSelectedId] = useState("");
     const [cashReserves, setCashReserves] = useState([]);
     const [currency, setCurrency] = useState("FCFA");
+    const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
+    const [total, setTotal] = useState(0);
+
 
     const [data, setData] = useState([]);
 
     function addBudget() {
         let formData = {
-            name, cashreserve, category, cycle,
+            name, account: cashreserve, category, cycle,
             amount, currency
         }
         console.log(`Posting..`)
@@ -53,13 +61,20 @@ const Budget = () => {
     useEffect(() => {
         axios.get(`${API_URL}/api/v1/get-budget`)
             .then((response) => {
-                console.log("Data gotten from API")
+                console.log("Budget gotten from API")
                 console.log(response.data);
                 setData(response.data)
+
+
+                let total = 0;
+                response.data.forEach((e, index) => {
+                    total += e.amount;
+                })
+                setTotal(total);
             })
         axios.get(`${API_URL}/api/v1/get-cashreserves`)
             .then((response) => {
-                console.log("Data gotten from API")
+                console.log("Cashresreve gotten from API")
                 console.log(response.data);
                 setCashReserves(response.data)
 
@@ -68,13 +83,17 @@ const Budget = () => {
 
         axios.get(`${API_URL}/api/v1/get-category`)
             .then((response) => {
-                console.log("Data gotten from API")
+                console.log("Category gotten from API")
                 console.log(response.data);
                 setCategories(response.data)
 
                 setCategory(response.data[0]._id)
             })
     }, []);
+
+    const formatNumber = (num) => {
+        return num.toLocaleString();
+    };
 
 
     function openModal() {
@@ -89,9 +108,34 @@ const Budget = () => {
         setIsOpen(false);
     }
 
+
     return (
         <div className="w-screen h-screen bg-[#eef0f2] overflow-hidden">
             <Navigation activeLink="budgets" />
+            <DeleteModal
+                isOpen={deleteModalIsOpen}
+                onRequestClose={() => setDeleteModalIsOpen(false)}
+                onDelete={() => {
+                    console.log("about to delete");
+                    axios.delete(`${API_URL}/api/v1/delete-budget/${selectedId}`)
+                        .then((response) => {
+                            let deletedData = response.data.data;
+
+                            let dummy = data;
+                            dummy = dummy.filter((e) => {
+                                return (
+                                    e._id !== deletedData._id
+                                )
+                            })
+                            setData(dummy)
+
+                            setDeleteModalIsOpen(false);
+                        })
+                        .catch((response) => {
+                            console.log(response)
+                        })
+                }}
+            />
 
 
             <div className="mt-4 px-6 flex-1 flex flex-row gap-3">
@@ -110,7 +154,7 @@ const Budget = () => {
                         </div>
                         <div>
                             <span>FCFA</span>
-                            <span>35000</span>
+                            <span>{formatNumber(total)}</span>
                         </div>
                     </div>
                     <div className="flex flex-col gap-3 mt-4">
@@ -118,39 +162,34 @@ const Budget = () => {
                             data.map((e, index) => {
                                 return (
                                     <div key={index} className=" flex flex-row justify-between items-center w-full px-6 py-3 rounded-md bg-white">
-                                        <div className="flex flex-row gap-3 items-center">
-                                            <button
-                                                onClick={() => {
-                                                    console.log("about to delete")
-                                                    axios.delete(`${API_URL}/api/v1/delete-budget/${e._id}`)
-                                                        .then((response) => {
-                                                            console.log("Deletion complete");
-                                                            let deletedData = response.data.data;
-
-                                                            let dummy = data;
-                                                            dummy = dummy.filter((e, index) => {
-                                                                return (
-                                                                    e._id !== deletedData._id
-                                                                )
-                                                            })
-                                                            setData(dummy)
-
-                                                        })
-                                                        .catch((response) => {
-                                                            console.log(response)
-                                                        })
-                                                }}>
-                                                <svg fill="grey" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.755,20.283,4,8H20L18.245,20.283A2,2,0,0,1,16.265,22H7.735A2,2,0,0,1,5.755,20.283ZM21,4H16V3a1,1,0,0,0-1-1H9A1,1,0,0,0,8,3V4H3A1,1,0,0,0,3,6H21a1,1,0,0,0,0-2Z" /></svg>
-                                            </button>
-                                            <p>{e.name}</p>
-
+                                        <div className="flex flex-row gap-4 items-center">
+                                            <input checked id="checked-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 " />
+                                            <div class="flex flex-col items-start gap-0">
+                                                <p>{e.name}</p>
+                                                <p>{e.account?.name}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p>{e.category}</p>
+                                        <div><span>{e.category.name}</span></div>
+
+                                        <div className="flex flex-row items-center gap-2">
+                                            <div className="flex flex-end items-center gap-2">
+                                                <span>{e.cycle}</span>
+                                                <span>{formatNumber(e.amount)}</span>
+                                            </div>
+
+                                            <Dropdown label="" dismissOnClick={false} renderTrigger={() => <div className="cursor-pointer">
+                                                <FiMoreVertical size={16} />
+                                            </div>}>
+                                                <Dropdown.Item onClick={() => {
+                                                    setSelectedId(e._id);
+                                                }}>Edit</Dropdown.Item>
+                                                <Dropdown.Item onClick={() => {
+                                                    setSelectedId(e._id);
+
+                                                    setDeleteModalIsOpen(true);
+                                                }}>Delete</Dropdown.Item>
+                                            </Dropdown>
                                         </div>
-                                        <div><p>{e.amount}</p></div>
-                                        <div><p>{e.cycle}</p></div>
-                                        <div><p>{e.cashreserve}</p></div>
                                     </div>
                                 )
                             })

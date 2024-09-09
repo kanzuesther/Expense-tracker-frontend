@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import Modal from 'react-modal';
 import axios from "axios";
 import { API_URL } from "../constants";
+import { FiMoreVertical } from 'react-icons/fi'
+import { Dropdown } from "flowbite-react";
+import DeleteModal from "./DeleteModal";
+import { getFormattedDate } from "../utils/DateFormat";
 
 const customStyles = {
     content: {
@@ -20,19 +24,25 @@ Modal.setAppElement('#root');
 const Reminders = () => {
     let subtitle;
     const [modalIsOpen, setIsOpen] = useState(false);
-    const [name, setName] = useState(false);
+    const [name, setName] = useState("");
     const [cycle, setCycle] = useState("Daily");
     const [cashreserve, setCashreserve] = useState("Cash");
-    const [amount, setAmount] = useState(false);
-    const [date, setDate] = useState(false);
+    const [amount, setAmount] = useState("");
+    const [acount, setAccount] = useState("");
+    const [date, setDate] = useState("");
 
     const [data, setData] = useState([]);
+    const [selectedId, setSelectedId] = useState("");
     const [cashReserves, setCashReserves] = useState([]);
+    const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
+    const [total, setTotal] = useState(0);
+    const [selectAll, setSelectAll] = useState(false);
+    const [selectedIds,setSelectedIds] = useState([]);
 
 
     function addReminder() {
         axios.post(`${API_URL}/api/v1/add-reminder`, {
-            name, cycle,date,amount,cashreserve
+            name, reminder_cycle: cycle, date, amount, cash_reserve: cashreserve
         }).then((response) => {
             console.log(response.data);
 
@@ -46,20 +56,40 @@ const Reminders = () => {
     useEffect(() => {
         axios.get(`${API_URL}/api/v1/get-reminder`)
             .then((response) => {
-                console.log("Data gotten from API")
+                console.log("Reminders gotten from API")
                 console.log(response.data);
                 setData(response.data)
+
+
+                let total = 0;
+                response.data.forEach((e, index) => {
+                    total += e.amount;
+                })
+                setTotal(total);
             })
-            axios.get(`${API_URL}/api/v1/get-cashreserves`)
+        axios.get(`${API_URL}/api/v1/get-cashreserves`)
             .then((response) => {
-                console.log("Data gotten from API")
+                console.log("CashReserve gotten from API")
                 console.log(response.data);
                 setCashReserves(response.data)
 
-                // setAccount(response.data[0]._id)
+                setCashreserve(response.data[0]._id)
             })
     }, []);
 
+    useEffect(()=>{
+        if (selectAll){
+            let array = data.map((e) => e._id);
+            setSelectedIds(array);
+        }else{
+            setSelectedIds([]);
+        }
+    },[selectAll]);
+
+
+    const formatNumber = (num) => {
+        return num.toLocaleString();
+    };
 
     function openModal() {
         setIsOpen(true);
@@ -77,6 +107,31 @@ const Reminders = () => {
         <div className="w-screen h-screen bg-[#eef0f2] overflow-hidden">
             <Navigation activeLink="reminders" />
 
+            <DeleteModal
+                isOpen={deleteModalIsOpen}
+                onRequestClose={() => setDeleteModalIsOpen(false)}
+                onDelete={() => {
+                    console.log("about to delete");
+                    axios.delete(`${API_URL}/api/v1/delete-reminder/${selectedId}`)
+                        .then((response) => {
+                            let deletedData = response.data.data;
+
+                            let dummy = data;
+                            dummy = dummy.filter((e) => {
+                                return (
+                                    e._id !== deletedData._id
+                                )
+                            })
+                            setData(dummy)
+
+                            setDeleteModalIsOpen(false);
+                        })
+                        .catch((response) => {
+                            console.log(response)
+                        })
+                }}
+            />
+
 
             <div className="mt-4 px-6 flex-1 flex flex-row gap-3">
                 <div className="h-screen bg-[#fafbfd] w-1/5 p-3 rounded-md flex flex-col gap-[24px]">
@@ -89,49 +144,71 @@ const Reminders = () => {
                 <div className="flex-1 ">
                     <div className="flex flex-row justify-between px-6 py-2 bg-[#fafbfd] rounded-md items-center">
                         <div className="flex flex-row gap-2 items-center ">
-                            <input type="checkbox" id="select_all_records" />
+                            <input type="checkbox" id="select_all_records"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                onChange={(e) => {
+                                    let checked = e.target.checked;
+                                    setSelectAll(checked);
+                                }}
+                            />
                             <label htmlFor="select_all_records">Select all</label>
                         </div>
                         <div>
                             <span>FCFA</span>
-                            <span>35000</span>
+                            <span>{formatNumber(total)}</span>
                         </div>
                     </div>
+
+                    {
+                        selectedIds.length >0 && <div>
+                            <button>Delete</button>
+                        </div>
+                    }
 
                     <div className="flex flex-col gap-3 mt-4">
                         {
                             data.map((e, index) => {
+                                let date = new Date(e.date);
+                                let checked = selectedIds.some((id)=>{
+                                    return e._id == id
+                                });
+
                                 return (
                                     <div key={index} className=" flex flex-row justify-between items-center w-full px-6 py-3 rounded-md bg-white">
-                                        <div className="flex flex-row gap-3 items-center">
-                                            <button 
-                                            onClick={()=>{
-                                                console.log("about to delete")
-                                                axios.delete(`${API_URL}/api/v1/delete-reminder/${e._id}`)
-                                                .then((response) => {
-                                                    console.log("Deletion complete");
-                                                    let deletedData = response.data.data;
-                                                    
-                                                    let dummy = data;
-                                                    dummy =dummy.filter((e,index)=>{
-                                                        return(
-                                                            e._id!==deletedData._id
-                                                        )
-                                                    })
-                                                    setData(dummy)
-
-                                                })
-                                                .catch((response)=>{
-                                                    console.log(response)
-                                                })
-                                            }}>
-                                                <svg fill="grey" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.755,20.283,4,8H20L18.245,20.283A2,2,0,0,1,16.265,22H7.735A2,2,0,0,1,5.755,20.283ZM21,4H16V3a1,1,0,0,0-1-1H9A1,1,0,0,0,8,3V4H3A1,1,0,0,0,3,6H21a1,1,0,0,0,0-2Z" /></svg>
-                                            </button>
-                                            <p>{e.name}</p>
-
+                                        <div className="flex flex-row gap-4 items-center">
+                                            <input  checked={checked} onChange={() => {
+                                                if (checked) {
+                                                    let array = selectedIds.filter((id) => id !== e._id);
+                                                    setSelectedIds([...array]);
+                                                } else {
+                                                    setSelectedIds([...selectedIds, e._id]);
+                                                }
+                                            }} id="checked-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                            <div>
+                                                <p>{e.name}</p>
+                                            </div>
+                                            <span>{e.category?.name}</span>
                                         </div>
                                         <div>
-                                            <p>{e.cashreserve}</p>
+                                            <p>{e.cash_reserve?.name}</p>
+                                        </div>
+                                        <div className="flex flex-row items-center gap-2">
+                                            <div className="flex flex-row gap-2">
+                                                <p>{getFormattedDate(date)}</p>
+                                                <p>{formatNumber(e.amount)}</p>
+                                            </div>
+                                            <Dropdown label="" dismissOnClick={false} renderTrigger={() => <div className="cursor-pointer">
+                                                <FiMoreVertical size={16} />
+                                            </div>}>
+                                                <Dropdown.Item onClick={() => {
+                                                    setSelectedId(e._id);
+                                                }}>Edit</Dropdown.Item>
+                                                <Dropdown.Item onClick={() => {
+                                                    setSelectedId(e._id);
+
+                                                    setDeleteModalIsOpen(true);
+                                                }}>Delete</Dropdown.Item>
+                                            </Dropdown>
                                         </div>
                                     </div>
                                 )
@@ -156,23 +233,43 @@ const Reminders = () => {
                                     e.preventDefault()
                                     addReminder()
                                 }}>
-                                    <label htmlFor="">Name:</label>
-                                    <input id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                    <label htmlFor="">Name</label>
+                                    <input id="name" value={name} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        onChange={(e) => {
+                                            console.log("Select changed value, the new value is ", e.target.value);
+                                            setName(e.target.value)
+                                        }} />
 
                                     <label htmlFor="">Cash-reserve</label>
-                                    <select id="cash-reserve" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full">
-                                        <option selected>Cash</option>
-                                        <option value="momo">Momo</option>
-                                        <option value="bank">Bank</option>
+                                    <select id="cash-reserve" value={cashreserve} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full"
+                                        onChange={(e) => {
+                                            console.log("Select changed value, the new value is ", e.target.value);
+                                            setCashreserve(e.target.value)
+                                        }}>
+                                        {
+                                            cashReserves.map((item, index) => <option value={item._id} key={index}>{item.name}</option>)
+                                        }
                                     </select>
                                     <label htmlFor="">Amount</label>
-                                    <input id="amount" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                    <input id="amount" value={amount} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        onChange={(e) => {
+                                            console.log("Select changed value, the new value is ", e.target.value);
+                                            setAmount(e.target.value)
+                                        }} />
 
                                     <label htmlFor="">Date</label>
-                                    <input id="date" type='date' className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                    <input id="date" value={date} type='date' className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        onChange={(e) => {
+                                            console.log("Select changed value, the new value is ", e.target.value);
+                                            setDate(e.target.value)
+                                        }} />
 
                                     <label htmlFor="">Cycle</label>
-                                    <select id="cycle" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full">
+                                    <select value={cycle} id="cycle" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#000] focus:border-[#000] block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full"
+                                        onChange={(e) => {
+                                            console.log("Select changed value, the new value is ", e.target.value);
+                                            setCycle(e.target.value)
+                                        }}>
                                         <option selected>Daily</option>
                                         <option value="weekly">Weekly</option>
                                         <option value="monthly">Monthly</option>

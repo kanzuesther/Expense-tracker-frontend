@@ -8,6 +8,8 @@ import { LuGift } from 'react-icons/lu'
 import { FiMoreVertical } from 'react-icons/fi'
 import { Dropdown } from "flowbite-react";
 import DeleteModal from "./DeleteModal";
+import IconRenderer from "./IconRenderer";
+import { getFormattedDate } from "../utils/DateFormat";
 
 const customStyles = {
     content: {
@@ -34,14 +36,17 @@ const Records = () => {
     const [date, setDate] = useState("9/9/2024");
     const [time, setTime] = useState("2 pm");
     const [type, setType] = useState("expense")
-    // const [title, setTitle] = u
+
 
     const [data, setData] = useState([]);
     const [cashReserves, setCashReserves] = useState([]);
     const [categories, setCategories] = useState([]);
 
     const [selectedId, setSelectedId] = useState("");
-    const [deleteModalIsOpen, setDeleteModalIsOpen] = useState("");
+    const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
+    const [selectAll, setSelectAll] = useState("");
+    const [total, setTotal] = useState(0);
+
 
     const [backgroundColor, setBackgroundColor] = useState("");
 
@@ -76,11 +81,17 @@ const Records = () => {
                 console.log("Data gotten from API")
                 console.log(response.data);
                 setData(response.data);
+
+                let total = 0;
+                response.data.forEach((e, index) => {
+                    total += e.amount;
+                })
+                setTotal(total);
             });
 
         axios.get(`${API_URL}/api/v1/get-cashreserves`)
             .then((response) => {
-                console.log("Data gotten from API")
+                console.log("cashReserve gotten from API")
                 console.log(response.data);
                 setCashReserves(response.data)
 
@@ -89,7 +100,7 @@ const Records = () => {
 
         axios.get(`${API_URL}/api/v1/get-category`)
             .then((response) => {
-                console.log("Data gotten from API")
+                console.log("Category gotten from API")
                 console.log(response.data);
                 setCategories(response.data)
 
@@ -99,7 +110,7 @@ const Records = () => {
 
     useEffect(() => {
         if (account && cashReserves.length > 0) {
-            for (let i=0; i<cashReserves.length; i++) {
+            for (let i = 0; i < cashReserves.length; i++) {
                 if (cashReserves[i]._id === account) {
                     setBackgroundColor(cashReserves[i].color);
                 }
@@ -107,6 +118,9 @@ const Records = () => {
         }
     }, [account]);
 
+    const formatNumber = (num) => {
+        return num.toLocaleString();
+    };
 
     function openModal() {
         setIsOpen(true);
@@ -205,37 +219,43 @@ const Records = () => {
                     <div className="flex flex-row justify-between px-6 py-2 bg-[#fafbfd] rounded-md items-center">
                         <div className="flex flex-row gap-2 items-center ">
                             <input type="checkbox" id="select_all_records" />
-                            <label htmlFor="select_all_records">Select all</label>
+                            <label htmlFor="select_all_records"
+                                onChange={(e) => {
+                                    console.log("Select changed value, the new value is ", e.target.value);
+                                    setSelectAll(e.target.value)
+                                }}>Select all</label>
                         </div>
                         <div>
                             <span>FCFA</span>
-                            <span>35000</span>
+                            <span>{formatNumber(total)}</span>
                         </div>
                     </div>
 
                     <div className="flex flex-col gap-3 mt-4">
                         {
                             data.map((e, index) => {
+                                let date = new Date(e.date);
+
                                 return (
                                     <div key={index} className=" flex flex-row justify-between items-center w-full px-6 py-3 rounded-md bg-white">
                                         <div className="flex flex-row gap-4 items-center">
                                             <input checked id="checked-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-
-                                            <div className="rounded-full w-[30px] h-[30px] flex flex-row justify-center items-center bg-teal-600">
-                                                <LuGift color="white" size={20} />
+                                            <div>
+                                                <span>{e.category.name}</span>
                                             </div>
-
-                                            <span>{e.category.name}</span>
 
                                             <div className="flex flex-row gap-2 items-center">
                                                 <span className="w-[5px] h-[5px] rounded-full bg-blue-600"></span>
-                                                <span>{e.sourceAccount.name}</span>
+                                                <span>{e?.sourceAccount?.name}</span>
                                             </div>
                                         </div>
                                         <div className="flex flex-row items-center gap-2">
-                                            <span className={`${e.type.toLowerCase() === 'income' ? 'text-green-500' : 'text-red-500'}`}>{e.type.toLowerCase() === 'expense' && '-'} {e.sourceAccount.currency} {e.amount}</span>
+                                            <div>
+                                                {getFormattedDate(date)}
+                                            </div>
 
-                                            <Dropdown label="" dismissOnClick={false} renderTrigger={() => <div className="cursor-pointer">
+                                            <Dropdown label="" dismissOnClick={false} renderTrigger={() => <div className="cursor-pointer flex flex-row items-center gap-2">
+                                                <p>{formatNumber(e.amount)}</p>
                                                 <FiMoreVertical size={16} />
                                             </div>}>
                                                 <Dropdown.Item onClick={() => {
@@ -299,7 +319,9 @@ const Records = () => {
 
                                             <div class="relative">
                                                 <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                                                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M6 12H18M12 6V18" stroke="#615c5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                                                    {/* <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M6 12H18M12 6V18" stroke="#615c5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg> */}
+                                                    {
+                                                        type == "expense" ? <IconRenderer backgroundColor="red" name={"minus"} size={16} /> : <IconRenderer backgroundColor="green" name={"plus"} size={16} />}
                                                 </div>
                                                 <input type="add" value={amount} id="default-add" className="items-center block w-full p-2.5 ps-10 text-sm text-right text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-12 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=" 0" required
                                                     onChange={(e) => {
@@ -329,17 +351,20 @@ const Records = () => {
                                 <div className="flex flex-col items-center">
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-                                            <select id="countries" value={category} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                onChange={(e) => {
-                                                    console.log("Select changed value, the new value is ", e.target.value);
-                                                    setCategory(e.target.value)
-                                                }}
-                                            >
-                                                {
-                                                    categories.map((e, index) => <option value={e._id}>{e.name}</option>)
-                                                }
-                                            </select>
+                                            <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
+                                            <div className="flex flex-row items-center gap-1">
+                                                <select id="category" value={category} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                    onChange={(e) => {
+                                                        console.log("Select changed value, the new value is ", e.target.value);
+                                                        setCategory(e.target.value)
+                                                    }}
+                                                >
+                                                    {
+                                                        categories.map((e, index) => <option value={e._id}>{e.name}</option>)
+                                                    }
+                                                </select>
+                                                < IconRenderer backgroundColor="grey" name={"plus"} size={18} />
+                                            </div>
                                         </div>
                                         <div>
                                             <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Labels</label>
