@@ -43,6 +43,8 @@ const Records = () => {
     const [selectedId, setSelectedId] = useState("");
     const [deleteModalIsOpen, setDeleteModalIsOpen] = useState("");
 
+    const [backgroundColor, setBackgroundColor] = useState("");
+
     const recordTypes = ["expense", "income", "transfer"];
 
 
@@ -94,6 +96,16 @@ const Records = () => {
                 setCategory(response.data[0]._id)
             })
     }, []);
+
+    useEffect(() => {
+        if (account && cashReserves.length > 0) {
+            for (let i=0; i<cashReserves.length; i++) {
+                if (cashReserves[i]._id === account) {
+                    setBackgroundColor(cashReserves[i].color);
+                }
+            }
+        }
+    }, [account]);
 
 
     function openModal() {
@@ -236,48 +248,6 @@ const Records = () => {
                                                 }}>Delete</Dropdown.Item>
                                             </Dropdown>
                                         </div>
-                                        {/* <div className="flex flex-row gap-3 items-center">
-                                            <button
-                                                onClick={() => {
-                                                    console.log("about to delete")
-                                                    axios.delete(`${API_URL}/api/v1/delete-expense/${e._id}`)
-                                                        .then((response) => {
-                                                            console.log("Deletion complete");
-                                                            let deletedData = response.data.data;
-
-                                                            let dummy = data;
-                                                            dummy = dummy.filter((e, index) => {
-                                                                return (
-                                                                    e._id !== deletedData._id
-                                                                )
-                                                            })
-                                                            setData(dummy)
-
-                                                        })
-                                                        .catch((response) => {
-                                                            console.log(response)
-                                                        })
-                                                }}>
-                                                <svg fill="grey" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.755,20.283,4,8H20L18.245,20.283A2,2,0,0,1,16.265,22H7.735A2,2,0,0,1,5.755,20.283ZM21,4H16V3a1,1,0,0,0-1-1H9A1,1,0,0,0,8,3V4H3A1,1,0,0,0,3,6H21a1,1,0,0,0,0-2Z" /></svg>
-                                            </button>
-                                            <p>{e.sourceAccount?.name}</p>
-
-                                        </div>
-                                        <div>
-                                            <p>{e.amount}</p>
-                                        </div>
-                                        <div>
-                                            <p>{e.currency}</p>
-                                        </div>
-                                        <div>
-                                            <p>{e.category?.name}</p>
-                                        </div>
-                                        <div>
-                                            <p>{e.date}</p>
-                                        </div>
-                                        <div>
-                                            <p>{e.time}</p>
-                                        </div> */}
                                     </div>
                                 )
                             })
@@ -295,8 +265,11 @@ const Records = () => {
                             <button onClick={() => closeModal()} className="w-8 h-8 bg-[#3C5A64] rounded-full text-white shadow-md">X</button>
                         </div>
                         <div className="w-full h-full flex flex-row justify-center">
-                            <div className="w-3/5 flex flex-col gap-4">
-                                <div className="bg-[#00897b] w-full p-3">
+                            <div className="w-full flex flex-col gap-4 mt-2">
+                                <div className="w-full p-3" style={{
+                                    backgroundColor: backgroundColor ? backgroundColor : "00897b",
+                                    transition: "all .4s ease-in-out"
+                                }}>
                                     <div className="grid grid-cols-3 border-2 border-red-100 rounded-md">
                                         {
                                             recordTypes.map((item, index) => {
@@ -412,7 +385,7 @@ const Records = () => {
                             </div>
 
                             {/* form2 */}
-                            <div className="w-2/5 p-3 ">
+                            {/* <div className="w-2/5 p-3 ">
                                 <form>
                                     <label htmlFor="">Payer</label>
                                     <input id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
@@ -446,7 +419,7 @@ const Records = () => {
 
 
                                 </form>
-                            </div>
+                            </div> */}
 
 
 
