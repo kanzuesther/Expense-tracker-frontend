@@ -10,6 +10,7 @@ import { Dropdown } from "flowbite-react";
 import DeleteModal from "./DeleteModal";
 import IconRenderer from "./IconRenderer";
 import { getFormattedDate } from "../utils/DateFormat";
+import AddCategoryModal from "./AddCategoryModal";
 
 const customStyles = {
     content: {
@@ -46,6 +47,7 @@ const Records = () => {
     const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
     const [selectAll, setSelectAll] = useState("");
     const [total, setTotal] = useState(0);
+    const [addModalIsOpen, setAddModalIsOpen] = useState(false);
 
 
     const [backgroundColor, setBackgroundColor] = useState("");
@@ -81,12 +83,6 @@ const Records = () => {
                 console.log("Data gotten from API")
                 console.log(response.data);
                 setData(response.data);
-
-                let total = 0;
-                response.data.forEach((e, index) => {
-                    total += e.amount;
-                })
-                setTotal(total);
             });
 
         axios.get(`${API_URL}/api/v1/get-cashreserves`)
@@ -118,6 +114,14 @@ const Records = () => {
         }
     }, [account]);
 
+    useEffect(() => {
+        let total = 0;
+        data.forEach((e, index) => {
+            total += (e.type === 'expense' ? -1 : 1) * e.amount;
+        })
+        setTotal(total);
+    }, [data])
+
     const formatNumber = (num) => {
         return num.toLocaleString();
     };
@@ -137,6 +141,18 @@ const Records = () => {
     return (
         <div className="w-screen h-screen bg-[#eef0f2] overflow-hidden">
             <Navigation activeLink="records" />
+
+            <AddCategoryModal
+                isOpen={addModalIsOpen}
+                onRequestClose={() => {
+                    setAddModalIsOpen(false);
+                }}
+                onSuccess={(response) => {
+                    console.log("category added successfully");
+                    setCategories([...categories, response.data.data])
+                    setAddModalIsOpen(false);
+                }}
+            />
 
             <DeleteModal
                 isOpen={deleteModalIsOpen}
@@ -225,7 +241,7 @@ const Records = () => {
                                     setSelectAll(e.target.value)
                                 }}>Select all</label>
                         </div>
-                        <div>
+                        <div className={`${total<0 ? "text-red-500" :"text-green-500"}`}>
                             <span>FCFA</span>
                             <span>{formatNumber(total)}</span>
                         </div>
@@ -240,6 +256,14 @@ const Records = () => {
                                     <div key={index} className=" flex flex-row justify-between items-center w-full px-6 py-3 rounded-md bg-white">
                                         <div className="flex flex-row gap-4 items-center">
                                             <input checked id="checked-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+
+                                            <div className="w-[32px] h-[32px] p-2 rounded-full flex flex-row items-center" style={{
+                                                backgroundColor: e.category.color
+
+                                            }}>
+                                                <IconRenderer name={e.category.icon} size={16} />
+                                            </div>
+
                                             <div>
                                                 <span>{e.category.name}</span>
                                             </div>
@@ -255,7 +279,11 @@ const Records = () => {
                                             </div>
 
                                             <Dropdown label="" dismissOnClick={false} renderTrigger={() => <div className="cursor-pointer flex flex-row items-center gap-2">
-                                                <p>{formatNumber(e.amount)}</p>
+
+                                                <p className={`${e.type == "expense" ? "text-red-500" : "text-green-500"} flex flex-row items-center`} >
+                                                    <IconRenderer name={e.type == "expense" ? "minus" : "plus"} size={8} backgroundColor={e.type == "expense" ? "red" : "green"} />
+                                                    {formatNumber(e.amount)}
+                                                </p>
                                                 <FiMoreVertical size={16} />
                                             </div>}>
                                                 <Dropdown.Item onClick={() => {
@@ -363,7 +391,10 @@ const Records = () => {
                                                         categories.map((e, index) => <option value={e._id}>{e.name}</option>)
                                                     }
                                                 </select>
-                                                < IconRenderer backgroundColor="grey" name={"plus"} size={18} />
+                                                <button onClick={() => setAddModalIsOpen(true)}>
+                                                    < IconRenderer backgroundColor="grey" name={"plus"} size={18} />
+                                                </button>
+
                                             </div>
                                         </div>
                                         <div>

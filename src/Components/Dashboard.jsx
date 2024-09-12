@@ -9,41 +9,43 @@ import { MdAdd } from "react-icons/md"
 import axios from "axios"
 import { API_URL } from "../constants"
 import IconRenderer from "./IconRenderer"
+import { categories } from "./IconSelector/iconNames"
 
 
 const Dashboard = () => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [cashReserves, setCashReserves] = useState([]);
 
-    function openModal() {
-        console.log(`Setting isOpen to true`);
-        setModalIsOpen(true);
-    }
+function openModal() {
+    console.log(`Setting isOpen to true`);
+    setModalIsOpen(true);
+}
 
-    function closeModal() {
-        setModalIsOpen(false);
-    }
+function closeModal() {
+    setModalIsOpen(false);
+}
 
-    useEffect(() => {
-        axios.get(`${API_URL}/api/v1/get-cashreserves`)
-            .then((response) => {
-                console.log("Cash reserves gotten from API")
-                console.log(response.data);
-                setCashReserves(response.data)
-            })
-    }, []);
+useEffect(() => {
+    axios.get(`${API_URL}/api/v1/get-cashreserves`)
+        .then((response) => {
+            console.log("Cash reserves gotten from API")
+            console.log(response.data);
+            setCashReserves(response.data)
+        })
+}, []);
 
-    return (
-        <div className="w-screen h-screen bg-[#eef0f2] overflow-auto pb-3">
-            <CashReserveModal
-                isOpen={modalIsOpen}
-                onRequestClose={closeModal}
-                onSuccess={(response) => {
-                    console.log("Cash reserve added successfully");
-                    setCashReserves([...cashReserves, response.data.data])
-                    closeModal();
-                }}
-            />
+return (
+    <div className="w-screen h-screen bg-[#eef0f2] overflow-auto pb-3">
+        <CashReserveModal
+            isOpen={modalIsOpen}
+            onRequestClose={closeModal}
+            onSuccess={(response) => {
+                console.log("Cash reserve added successfully");
+                setCashReserves([...cashReserves, response.data.data])
+                closeModal();
+            }}
+        />
+
             <Navigation activeLink="dashboard" />
 
             <div className="bg-[#f9fbfd] w-full px-3 md:px-6 xl:px-[80px] py-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
@@ -82,8 +84,7 @@ const Dashboard = () => {
                 <MdAdd color='white' size={32} />
             </button>
         </div>
-    )
+        )
 }
 
-
-export default Dashboard
+  export default Dashboard;
