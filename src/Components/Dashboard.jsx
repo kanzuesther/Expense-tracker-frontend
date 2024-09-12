@@ -35,7 +35,7 @@ useEffect(() => {
 }, []);
 
 return (
-    <div className="w-screen h-screen bg-[#eef0f2] overflow-auto pb-3">
+    <div className="w-screen h-screen bg-[#eef0f2] overflow-auto pb-3" style={{ overflow: 'scroll' }}>
         <CashReserveModal
             isOpen={modalIsOpen}
             onRequestClose={closeModal}

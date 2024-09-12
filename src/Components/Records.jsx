@@ -11,6 +11,7 @@ import DeleteModal from "./DeleteModal";
 import IconRenderer from "./IconRenderer";
 import { getFormattedDate } from "../utils/DateFormat";
 import AddCategoryModal from "./AddCategoryModal";
+import { FaArrowRight } from 'react-icons/fa';
 
 const customStyles = {
     content: {
@@ -34,8 +35,8 @@ const Records = () => {
     const [color, setColor] = useState("Red");
     const [category, setCategory] = useState("Choose");
     const [label, setLabel] = useState("Choose");
-    const [date, setDate] = useState("9/9/2024");
-    const [time, setTime] = useState("2 pm");
+    const [date, setDate] = useState("");
+    const [time, setTime] = useState("");
     const [type, setType] = useState("expense")
 
 
@@ -48,6 +49,11 @@ const Records = () => {
     const [selectAll, setSelectAll] = useState("");
     const [total, setTotal] = useState(0);
     const [addModalIsOpen, setAddModalIsOpen] = useState(false);
+    const [targetAccount, setTargetAccount] = useState(null);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [deleteAllRecords, setDeleteAllRecords] = useState(false);
+
+
 
 
     const [backgroundColor, setBackgroundColor] = useState("");
@@ -58,14 +64,13 @@ const Records = () => {
     function addRecords() {
         const formData = {
             amount, currency, color, category, label, date, time,
-            sourceAccount: account, type
+            sourceAccount: account, type, targetAccount
         }
         axios.post(`${API_URL}/api/v1/add-expense`, formData).then((response) => {
             console.log(response.data);
 
             let dummy = data;
-            dummy.push(response.data.data);
-            setData(dummy);
+            setData([response.data.data, ...dummy]);
             closeModal();
         })
             .catch((response) => {
@@ -98,7 +103,7 @@ const Records = () => {
             .then((response) => {
                 console.log("Category gotten from API")
                 console.log(response.data);
-                setCategories(response.data)
+                setCategories(response.data);
 
                 setCategory(response.data[0]._id)
             })
@@ -115,12 +120,23 @@ const Records = () => {
     }, [account]);
 
     useEffect(() => {
+        console.log(`Data changed, getting the total`);
         let total = 0;
-        data.forEach((e, index) => {
+        data.forEach((e) => {
             total += (e.type === 'expense' ? -1 : 1) * e.amount;
         })
         setTotal(total);
     }, [data])
+
+    useEffect(() => {
+        if (selectAll) {
+            let array = data.map((e) => e._id);
+            setSelectedIds(array);
+        } else {
+            setSelectedIds([]);
+        }
+    }, [selectAll]);
+
 
     const formatNumber = (num) => {
         return num.toLocaleString();
@@ -139,7 +155,7 @@ const Records = () => {
     }
 
     return (
-        <div className="w-screen h-screen bg-[#eef0f2] overflow-hidden">
+        <div className="w-screen h-screen bg-[#eef0f2]" style={{ overflow: 'scroll' }}>
             <Navigation activeLink="records" />
 
             <AddCategoryModal
@@ -178,23 +194,35 @@ const Records = () => {
                         })
                 }}
             />
+            <DeleteModal
+                isOpen={deleteAllRecords}
+                onRequestClose={() => { setDeleteAllRecords(false) }}
+                onDelete={() => {
+                    console.log("about to delete");
+                    axios.delete(`${API_URL}/api/v1/delete-reminders`, {
+                        data: {
+                            selectedIds
+                        }
+                    })
+                        .then((response) => {
+                            let deletedData = response.data.data;
 
-            <div className="flex flex-row justify-between mt-4 px-6">
-                <select id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                    <option selected>Choose a country</option>
-                    <option value="US">United States</option>
-                    <option value="CA">Canada</option>
-                    <option value="FR">France</option>
-                    <option value="DE">Germany</option>
-                </select>
-                <select id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                    <option selected>Choose a country</option>
-                    <option value="US">United States</option>
-                    <option value="CA">Canada</option>
-                    <option value="FR">France</option>
-                    <option value="DE">Germany</option>
-                </select>
-            </div>
+                            let dummy = data;
+                            dummy = dummy.filter((e) => {
+                                return (
+                                    !selectedIds.includes(e._id)
+                                )
+                            })
+                            setData(dummy)
+
+                            setDeleteAllRecords(false);
+                        })
+                        .catch((response) => {
+                            console.log(response)
+                        })
+                }}
+            />
+
 
             <div className="mt-4 px-6 flex-1 flex flex-row gap-3">
                 <div className="h-screen bg-[#fafbfd] w-1/5 p-3 rounded-md flex flex-col gap-[24px]">
@@ -236,15 +264,17 @@ const Records = () => {
                         <div className="flex flex-row gap-2 items-center ">
                             <input type="checkbox" id="select_all_records" />
                             <label htmlFor="select_all_records"
-                                onChange={(e) => {
-                                    console.log("Select changed value, the new value is ", e.target.value);
-                                    setSelectAll(e.target.value)
-                                }}>Select all</label>
+                               onChange={(e) => {
+                                let checked = e.target.checked;
+                                setSelectAll(checked);
+                              }}>Select all</label>
                         </div>
-                        <div className={`${total<0 ? "text-red-500" :"text-green-500"}`}>
+                        <div className={`${total < 0 ? "text-red-500" : "text-green-500"}`}>
                             <span>FCFA</span>
                             <span>{formatNumber(total)}</span>
                         </div>
+                        {selectedIds.length > 0 ? <div className="cursor-pointer"><RiDeleteBinLine color={"red"} onClick={() => { setDeleteAllRecords(true) }} /></div> : <></>}
+
                     </div>
 
                     <div className="flex flex-col gap-3 mt-4">
@@ -255,7 +285,7 @@ const Records = () => {
                                 return (
                                     <div key={index} className=" flex flex-row justify-between items-center w-full px-6 py-3 rounded-md bg-white">
                                         <div className="flex flex-row gap-4 items-center">
-                                            <input checked id="checked-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                            <input id="checked-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
 
                                             <div className="w-[32px] h-[32px] p-2 rounded-full flex flex-row items-center" style={{
                                                 backgroundColor: e.category.color
@@ -324,55 +354,91 @@ const Records = () => {
                                                 return <span onClick={() => setType(item)} key={index} className={`text-center ${type === item ? 'bg-white' : ''} ${index + 1 < recordTypes.length ? 'border-r-2' : ''} border-red-100 cursor-pointer`}>{item[0].toUpperCase() + item.substring(1)}</span>
                                             })
                                         }
-                                        {/* <span className="text-center border-r-2 border-red-100">Expense</span>
-                                        <span className="text-center  border-r-2 border-red-100">Income</span>
-                                        <span className="text-center">Transfer</span> */}
                                     </div>
-                                    <div className="justify-center items-center mt-2">
-                                        <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Account</label>
-                                        <select id="countries" value={account} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                            onChange={(e) => {
-                                                console.log("Select changed value, the new value is ", e.target.value);
-                                                setAccount(e.target.value)
-                                            }}
-                                        >
-                                            {
-                                                cashReserves.map((e, index) => <option value={e._id}>{e.name}</option>)
-                                            }
-                                        </select>
-                                    </div>
-                                    <div className="flex flex-row gap-2">
-                                        <div>
-                                            <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Amount</label>
+                                    {
+                                        type == "transfer" ? (
+                                            <>
+                                                <div className="flex flex-col gap-2 items-center">
+                                                    <label htmlFor="">Amount</label>
+                                                    <input type="text" name="amount" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                                    <div className="flex flex-row gap-2 items-center w-full justify-between">
+                                                        <div className="flex flex-col">
+                                                            <label htmlFor="">From</label>
+                                                            <select id="from" value={account} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                                onChange={(e) => {
+                                                                    console.log("Select changed value, the new value is ", e.target.value);
+                                                                    setAccount(e.target.value)
+                                                                }}>
+                                                                {
+                                                                    cashReserves.map((e, index) => <option value={e._id}>{e.name}</option>)
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                        <FaArrowRight className="items-center" />
+                                                        <div className="flex flex-col">
+                                                            <label htmlFor="">To</label>
+                                                            <select id="to" value={targetAccount} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                                onChange={(e) => {
+                                                                    console.log("Select changed value, the new value is ", e.target.value);
+                                                                    setTargetAccount(e.target.value)
+                                                                }}>
+                                                                {
+                                                                    cashReserves.map((e, index) => <option value={e._id}>{e.name}</option>)
+                                                                }
+                                                            </select>
+                                                        </div>
 
-                                            <div class="relative">
-                                                <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                                                    {/* <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M6 12H18M12 6V18" stroke="#615c5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg> */}
-                                                    {
-                                                        type == "expense" ? <IconRenderer backgroundColor="red" name={"minus"} size={16} /> : <IconRenderer backgroundColor="green" name={"plus"} size={16} />}
+                                                    </div>
                                                 </div>
-                                                <input type="add" value={amount} id="default-add" className="items-center block w-full p-2.5 ps-10 text-sm text-right text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-12 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=" 0" required
+
+                                            </>
+                                        ) : (
+                                            <><div className="justify-center items-center mt-2">
+                                                <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Account</label>
+                                                <select id="countries" value={account} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                                     onChange={(e) => {
                                                         console.log("Select changed value, the new value is ", e.target.value);
-                                                        setAmount(e.target.value)
+                                                        setAccount(e.target.value)
                                                     }}
-                                                />
+                                                >
+                                                    {
+                                                        cashReserves.map((e, index) => <option value={e._id}>{e.name}</option>)
+                                                    }
+                                                </select>
                                             </div>
-                                        </div>
+                                                <div className="flex flex-row gap-2">
+                                                    <div>
+                                                        <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Amount</label>
 
-                                        <div className="justify-center items-center">
-                                            <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Currency</label>
-                                            <select id="countries" value={currency} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                onChange={(e) => {
-                                                    console.log("Select changed value, the new value is ", e.target.value);
-                                                    setCurrency(e.target.value)
-                                                }}
-                                            >
-                                                <option selected>XAF</option>
-                                            </select>
-                                        </div>
+                                                        <div class="relative">
+                                                            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                                                {
+                                                                    type == "expense" ? <IconRenderer backgroundColor="red" name={"minus"} size={16} /> : <IconRenderer backgroundColor="green" name={"plus"} size={16} />}
+                                                            </div>
+                                                            <input type="add" value={amount} id="default-add" className="items-center block w-full p-2.5 ps-10 text-sm text-right text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-12 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=" 0" required
+                                                                onChange={(e) => {
+                                                                    console.log("Select changed value, the new value is ", e.target.value);
+                                                                    setAmount(e.target.value)
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
 
-                                    </div>
+                                                    <div className="justify-center items-center">
+                                                        <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Currency</label>
+                                                        <select id="countries" value={currency} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                            onChange={(e) => {
+                                                                console.log("Select changed value, the new value is ", e.target.value);
+                                                                setCurrency(e.target.value)
+                                                            }}
+                                                        >
+                                                            <option selected>XAF</option>
+                                                        </select>
+                                                    </div>
+
+                                                </div></>
+                                        )
+                                    }
 
                                 </div>
 
@@ -484,8 +550,8 @@ const Records = () => {
 
                     </Modal>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }
 

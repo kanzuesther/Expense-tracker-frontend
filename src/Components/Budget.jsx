@@ -110,7 +110,7 @@ const Budget = () => {
 
 
     return (
-        <div className="w-screen h-screen bg-[#eef0f2] overflow-hidden">
+        <div className="w-screen h-screen bg-[#eef0f2] overflow-hidden" style={{ overflow: 'scroll' }}>
             <Navigation activeLink="budgets" />
             <DeleteModal
                 isOpen={deleteModalIsOpen}
@@ -169,7 +169,7 @@ const Budget = () => {
                                                 <p>{e.account?.name}</p>
                                             </div>
                                         </div>
-                                        <div><span>{e.category.name}</span></div>
+                                        <div><span>{e.category?.name}</span></div>
 
                                         <div className="flex flex-row items-center gap-2">
                                             <div className="flex flex-end items-center gap-2">

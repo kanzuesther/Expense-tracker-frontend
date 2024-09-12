@@ -68,7 +68,7 @@ const CashReserves = () => {
     }
 
     return (
-        <div className="w-screen h-screen bg-[#eef0f2] overflow-hidden">
+        <div className="w-screen h-screen bg-[#eef0f2] overflow-hidden" style={{ overflow: 'scroll' }}>
             <Navigation activeLink="cash-reserves" />
 
             <DeleteModal

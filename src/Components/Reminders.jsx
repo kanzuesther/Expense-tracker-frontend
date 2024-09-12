@@ -106,7 +106,7 @@ const Reminders = () => {
 
   return (
     <>
-      <div className="w-screen h-screen bg-[#eef0f2] overflow-hidden">
+      <div className="w-screen h-screen bg-[#eef0f2] overflow-hidden" style={{ overflow: 'scroll' }}>
         <Navigation activeLink="reminders" />
 
         <DeleteModal
@@ -189,7 +189,6 @@ const Reminders = () => {
                   <span>FCFA</span>
                   <span>{formatNumber(total)}</span>
                 </div>
-
                 {selectedIds.length > 0 ? <div className="cursor-pointer"><RiDeleteBinLine color={"red"} onClick={() => { setDeleteAllRecords(true) }} /></div> : <></>}
               </div>
 
