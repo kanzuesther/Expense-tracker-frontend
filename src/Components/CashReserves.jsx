@@ -8,6 +8,7 @@ import { MdAdd } from "react-icons/md";
 import { Dropdown } from "flowbite-react";
 import { LuGift } from "react-icons/lu";
 import { FiMoreVertical } from 'react-icons/fi'
+import { RiDeleteBinLine } from 'react-icons/ri'
 import IconRenderer from "./IconRenderer";
 
 
@@ -33,6 +34,11 @@ const CashReserves = () => {
     const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
     const [total, setTotal] = useState(0);
 
+    const [selectAll, setSelectAll] = useState(false);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [deleteAllRecords, setDeleteAllRecords] = useState(false);
+
+
 
     useEffect(() => {
         axios.get(`${API_URL}/api/v1/get-cashreserves`)
@@ -49,6 +55,23 @@ const CashReserves = () => {
                 setTotal(total);
             })
     }, []);
+
+    useEffect(() => {
+        if (selectAll) {
+            let array = data.map((e) => e._id);
+            setSelectedIds(array);
+        } else {
+            setSelectedIds([]);
+        }
+    }, [selectAll]);
+
+    useEffect(() => {
+        console.log(`Selected ids changed to`);
+        console.log(selectedIds);
+        if (selectedIds.length == data.length) {
+            setSelectAll(true);
+        }
+    }, [selectedIds]);
 
     const formatNumber = (num) => {
         return num.toLocaleString();
@@ -96,6 +119,35 @@ const CashReserves = () => {
                 }}
             />
 
+            <DeleteModal
+                isOpen={deleteAllRecords}
+                onRequestClose={() => { setDeleteAllRecords(false) }}
+                onDelete={() => {
+                    console.log("about to delete");
+                    axios.delete(`${API_URL}/api/v1/delete-cashreserve`, {
+                        data: {
+                            selectedIds
+                        }
+                    })
+                        .then((response) => {
+                            let deletedData = response.data.data;
+
+                            let dummy = data;
+                            dummy = dummy.filter((e) => {
+                                return (
+                                    !selectedIds.includes(e._id)
+                                )
+                            })
+                            setData(dummy)
+
+                            setDeleteAllRecords(false);
+                        })
+                        .catch((response) => {
+                            console.log(response)
+                        })
+                }}
+            />
+
             <div className="mt-4 px-6 flex-1 flex flex-row gap-3">
                 <div className="hidden md:block h-screen bg-[#fafbfd] w-1/5 p-3 rounded-md flex flex-col gap-[24px]">
                     <h5 className="text-2xl font-bold">CashReserves</h5>
@@ -107,24 +159,43 @@ const CashReserves = () => {
                 <div className="flex-1 ">
                     <div className="flex flex-row justify-between px-6 py-2 bg-[#fafbfd] rounded-md items-center">
                         <div className="flex flex-row gap-2 items-center ">
-                            <input type="checkbox" id="select_all_records" />
+                            <input type="checkbox" id="select_all_records"
+                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                checked={selectAll}
+                                onChange={(e) => {
+                                    let checked = e.target.checked;
+                                    setSelectAll(checked);
+                                }} />
                             <label htmlFor="select_all_records">Select all</label>
                         </div>
                         <div>
                             <span>FCFA</span>
                             <span>{formatNumber(total)}</span>
                         </div>
+                        {selectedIds.length > 0 ? <div className="cursor-pointer"><RiDeleteBinLine color={"red"} onClick={() => { setDeleteAllRecords(true) }} /></div> : <></>}
+
                     </div>
 
                     <div className="flex flex-col gap-3 mt-4">
                         {
                             data.map((e, index) => {
+                                let checked = selectedIds.some((id) => {
+                                    return e._id == id
+                                });
                                 return (
                                     <div key={index} className=" flex flex-row justify-between items-center w-full px-6 py-3 rounded-md bg-white">
                                         <div className="flex flex-row gap-4 items-center">
-                                            <input checked id="checked-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                            <input checked={checked} onChange={() => {
+                                                console.log(`Input changed, checked? ${checked}`)
+                                                if (checked) {
+                                                    let array = selectedIds.filter((id) => id !== e._id);
+                                                    setSelectedIds([...array]);
+                                                } else {
+                                                    setSelectedIds([...selectedIds, e._id]);
+                                                }
+                                            }} id="checked-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
                                             <div className="flex flex-row items-center gap-2">
-                                                <span className="rounded-full p-1 " style={{backgroundColor:e.color}}><IconRenderer name={e.icon} backgroundColor={'white'} size={16} /></span>
+                                                <span className="rounded-full p-1 " style={{ backgroundColor: e.color }}><IconRenderer name={e.icon} backgroundColor={'white'} size={16} /></span>
                                                 <span>{e.name}</span>
                                             </div>
                                         </div>
@@ -167,31 +238,6 @@ const CashReserves = () => {
                     dummy.push(response.data.data);
                     setData(dummy);
                     closeModal();
-                }}
-            />
-
-            <DeleteModal
-                isOpen={deleteModalIsOpen}
-                onRequestClose={() => setDeleteModalIsOpen(false)}
-                onDelete={() => {
-                    console.log("about to delete");
-                    axios.delete(`${API_URL}/api/v1/delete-cashreserves/${selectedId}`)
-                        .then((response) => {
-                            let deletedData = response.data.data;
-
-                            let dummy = data;
-                            dummy = dummy.filter((e) => {
-                                return (
-                                    e._id !== deletedData._id
-                                )
-                            })
-                            setData(dummy)
-
-                            setDeleteModalIsOpen(false);
-                        })
-                        .catch((response) => {
-                            console.log(response)
-                        })
                 }}
             />
         </div>

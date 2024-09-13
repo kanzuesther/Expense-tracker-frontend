@@ -12,6 +12,8 @@ import IconRenderer from "./IconRenderer";
 import { getFormattedDate } from "../utils/DateFormat";
 import AddCategoryModal from "./AddCategoryModal";
 import { FaArrowRight } from 'react-icons/fa';
+import { RiDeleteBinLine } from 'react-icons/ri';
+
 
 const customStyles = {
     content: {
@@ -199,7 +201,7 @@ const Records = () => {
                 onRequestClose={() => { setDeleteAllRecords(false) }}
                 onDelete={() => {
                     console.log("about to delete");
-                    axios.delete(`${API_URL}/api/v1/delete-reminders`, {
+                    axios.delete(`${API_URL}/api/v1/delete-expenses`, {
                         data: {
                             selectedIds
                         }
@@ -228,19 +230,19 @@ const Records = () => {
                 <div className="h-screen bg-[#fafbfd] w-1/5 p-3 rounded-md flex flex-col gap-[24px]">
                     <h5 className="text-2xl font-bold">Records</h5>
                     <button className="rounded-full px-3 py-1 bg-[#FFB74D] text-white" onClick={() => openModal()}>+ Add</button>
-                    <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    <label for="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                    <div className="relative">
+                        <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                             </svg>
                         </div>
-                        <input type="search" id="default-search" class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-                        <button type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+                        <input type="search" id="default-search" className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                        <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                     </div>
-                    <div className="flex flex-col px-3 py-1 gap-2">
+                    <div classNameName="flex flex-col px-3 py-1 gap-2">
                         <p>Cash reserve</p>
-                        <select id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <select id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <option value="all">All</option>
                             {
                                 cashReserves.map((item, index) => <option value={item._id} key={index}>{item.name}</option>)
@@ -249,7 +251,7 @@ const Records = () => {
                     </div>
                     <div className="flex flex-col px-3 py-1 gap-2">
                         <p>Categories</p>
-                        <select id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <select id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <option value="all">All</option>
                             {
                                 categories.map((item, index) => <option value={item._id} key={index}>{item.name}</option>)
@@ -262,12 +264,14 @@ const Records = () => {
                 <div className="flex-1 ">
                     <div className="flex flex-row justify-between px-6 py-2 bg-[#fafbfd] rounded-md items-center">
                         <div className="flex flex-row gap-2 items-center ">
-                            <input type="checkbox" id="select_all_records" />
-                            <label htmlFor="select_all_records"
-                               onChange={(e) => {
-                                let checked = e.target.checked;
-                                setSelectAll(checked);
-                              }}>Select all</label>
+                            <input type="checkbox" id="select_all_records"
+                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                checked={selectAll}
+                                onChange={(e) => {
+                                    let checked = e.target.checked;
+                                    setSelectAll(checked);
+                                }} />
+                            <label htmlFor="select_all_records">Select all</label>
                         </div>
                         <div className={`${total < 0 ? "text-red-500" : "text-green-500"}`}>
                             <span>FCFA</span>
@@ -281,11 +285,21 @@ const Records = () => {
                         {
                             data.map((e, index) => {
                                 let date = new Date(e.date);
+                                let checked = selectedIds.some((id) => {
+                                    return e._id == id
+                                });
 
                                 return (
                                     <div key={index} className=" flex flex-row justify-between items-center w-full px-6 py-3 rounded-md bg-white">
                                         <div className="flex flex-row gap-4 items-center">
-                                            <input id="checked-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                                            <input checked={checked} onChange={() => {
+                                                if (checked) {
+                                                    let array = selectedIds.filter((id) => id !== e._id);
+                                                    setSelectedIds([...array]);
+                                                } else {
+                                                    setSelectedIds([...selectedIds, e._id]);
+                                                }
+                                            }} id="checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
 
                                             <div className="w-[32px] h-[32px] p-2 rounded-full flex flex-row items-center" style={{
                                                 backgroundColor: e.category.color

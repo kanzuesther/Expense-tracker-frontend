@@ -4,39 +4,39 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const DonutChart = () => {
+const DonutChart = ({data}) => {
     const [hoveredSegment, setHoveredSegment] = useState(null);
 
     const chartRef = useRef(null);
 
-    const data = {
-        labels: [
-            'Food & Drinks',
-            'Transportation',
-            'Communication, PC',
-            'Housing',
-            'Life & Entertainment',
-            'Income',
-            'Others',
-            'Shopping',
-        ],
-        datasets: [
-            {
-                data: [17500, 29000, 31000, 500, 2000, 5500, 6000, 12500],
-                backgroundColor: [
-                    '#FF6384', // red
-                    '#A9A9A9', // gray
-                    '#36A2EB', // blue
-                    '#FFCE56', // yellow
-                    '#4CAF50', // green
-                    '#FFA500', // orange
-                    '#800020', // oxblood
-                    '#87CEEB', // sky blue
-                ],
-                hoverOffset: 4,
-            },
-        ],
-    };
+    // const data = {
+    //     labels: [
+    //         'Food & Drinks',
+    //         'Transportation',
+    //         'Communication, PC',
+    //         'Housing',
+    //         'Life & Entertainment',
+    //         'Income',
+    //         'Others',
+    //         'Shopping',
+    //     ],
+    //     datasets: [
+    //         {
+    //             data: [17500, 29000, 31000, 500, 2000, 5500, 6000, 12500],
+    //             backgroundColor: [
+    //                 '#FF6384', // red
+    //                 '#A9A9A9', // gray
+    //                 '#36A2EB', // blue
+    //                 '#FFCE56', // yellow
+    //                 '#4CAF50', // green
+    //                 '#FFA500', // orange
+    //                 '#800020', // oxblood
+    //                 '#87CEEB', // sky blue
+    //             ],
+    //             hoverOffset: 4,
+    //         },
+    //     ],
+    // };
 
     const total = data.datasets[0].data.reduce((acc, value) => acc + value, 0);
 
