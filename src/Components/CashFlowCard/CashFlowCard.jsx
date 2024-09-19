@@ -1,11 +1,39 @@
-import React from 'react';
+import { useEffect,useState } from "react";
+import axios from "axios";
+import { API_URL } from "../../constants";
+
 
 const CashFlowCard = () => {
-    const income = 105500;
-    const expense = 133000;
-    const netCashFlow = income - expense;
     const percentageChange = '>1000%';
+    const [income,setIncome]= useState(0);
+    const [expense,setExpense]= useState(0);
+    const netCashFlow = income - expense;
 
+
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        let income = 0;
+        let expense = 0;
+        axios.get(`${API_URL}/api/v1/get-expenses`)
+            .then((response) => {
+            console.log("Income gotten from API")
+            console.log(response)
+            response.data.forEach((e) => {
+                if(e.type=="income"){
+                    income += e.amount;
+                }else if(e.type=="expense"){
+                    expense += e.amount;
+                }
+            })
+
+            console.log("Income", income);
+            console.log("expense", expense);
+            setIncome(income);
+            setExpense(expense);
+
+        });
+    })
     return (
         <div className="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
             <div className="py-1">
@@ -41,7 +69,7 @@ const CashFlowCard = () => {
                 <div className="w-full bg-gray-200 rounded-md h-[32px]">
                     <div
                         className="bg-green-500 h-[32px] rounded-md"
-                        style={{ width: `${(income / Math.max(income,expense)) * 100}%` }}
+                        style={{ width: `${(income / Math.max(income, expense)) * 100}%` }}
                     ></div>
                 </div>
             </div>
@@ -53,7 +81,7 @@ const CashFlowCard = () => {
                 <div className="w-full bg-gray-200 rounded-md h-[32px]">
                     <div
                         className="bg-red-500 h-[32px] rounded-md"
-                        style={{ width: `${(expense / Math.max(income,expense)) * 100}%` }}
+                        style={{ width: `${(expense / Math.max(income, expense)) * 100}%` }}
                     ></div>
                 </div>
             </div>

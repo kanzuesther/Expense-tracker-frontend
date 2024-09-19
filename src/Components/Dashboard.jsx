@@ -74,7 +74,7 @@ return (
                     <option value="DE">Germany</option>
                 </select>
             </div>
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 px-3 md:px-6 xl:px-[80px] gap-3">
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 px-3 md:px-6 xl:px-[80px] gap-3">
                 <ExpenseStructureCard />
                 <CashFlowCard />
                 <BalanceTrendCard />
