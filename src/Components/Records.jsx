@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 import Modal from 'react-modal';
 import { API_URL } from "../constants";
 import axios from "axios";
-import { Sidebar } from "flowbite-react";
-import { LuGift } from 'react-icons/lu'
 import { FiMoreVertical } from 'react-icons/fi'
 import { Dropdown } from "flowbite-react";
 import DeleteModal from "./DeleteModal";
@@ -12,7 +10,7 @@ import IconRenderer from "./IconRenderer";
 import { getFormattedDate } from "../utils/DateFormat";
 import AddCategoryModal from "./AddCategoryModal";
 import { FaArrowRight } from 'react-icons/fa';
-import { RiDeleteBinLine } from 'react-icons/ri';
+import RecordModal from "./RecordModal";
 
 
 const customStyles = {
@@ -35,7 +33,7 @@ const Records = () => {
     const [account, setAccount] = useState("Cash");
     const [currency, setCurrency] = useState("FCFA");
     const [color, setColor] = useState("Red");
-    const [category, setCategory] = useState("Choose");
+    const [category, setCategory] = useState("");
     const [label, setLabel] = useState("Choose");
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
@@ -164,11 +162,13 @@ const Records = () => {
                 isOpen={addModalIsOpen}
                 onRequestClose={() => {
                     setAddModalIsOpen(false);
+                    setIsOpen(true);
                 }}
                 onSuccess={(response) => {
                     console.log("category added successfully");
                     setCategories([...categories, response.data.data])
                     setAddModalIsOpen(false);
+                    setIsOpen(true);
                 }}
             />
 
@@ -347,7 +347,7 @@ const Records = () => {
                     </div>
 
                     <Modal
-                        isOpen={modalIsOpen}
+                        isOpen={false}
                         onAfterOpen={afterOpenModal}
                         onRequestClose={closeModal}
                         style={customStyles}
@@ -519,50 +519,28 @@ const Records = () => {
                                     </div>
                                 </div>
                             </div>
-
-                            {/* form2 */}
-                            {/* <div className="w-2/5 p-3 ">
-                                <form>
-                                    <label htmlFor="">Payer</label>
-                                    <input id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                                    <label htmlFor="">Note</label>
-                                    <textarea id="message" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Leave a comment..."></textarea>
-
-                                    <label htmlFor="">Payment type</label>
-                                    <select id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full">
-                                        <option selected>Cash</option>
-                                        <option value="US">United States</option>
-                                        <option value="CA">Canada</option>
-                                        <option value="FR">France</option>
-                                        <option value="DE">Germany</option>
-                                    </select>
-                                    <label htmlFor="">Payment status</label>
-                                    <select id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 w-full">
-                                        <option selected>Cleared</option>
-                                        <option value="US">United States</option>
-                                        <option value="CA">Canada</option>
-                                        <option value="FR">France</option>
-                                        <option value="DE">Germany</option>
-                                    </select>
-                                    <label htmlFor="">Location</label>
-
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 end-2 flex items-center ps-3 pointer-events-none">
-                                            <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g clip-path="url(#clip0_15_152)"> <rect width="24" height="24" fill="white"></rect> <circle cx="10.5" cy="10.5" r="6.5" stroke="#867979" stroke-linejoin="round"></circle> <path d="M19.6464 20.3536C19.8417 20.5488 20.1583 20.5488 20.3536 20.3536C20.5488 20.1583 20.5488 19.8417 20.3536 19.6464L19.6464 20.3536ZM20.3536 19.6464L15.3536 14.6464L14.6464 15.3536L19.6464 20.3536L20.3536 19.6464Z" fill="#867979"></path> </g> <defs> <clipPath id="clip0_15_152"> <rect width="24" height="24" fill="white"></rect> </clipPath> </defs> </g></svg>
-                                        </div>
-                                        <input type="add" id="default-add" className="items-center block w-full p-2.5 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-12 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Name or address" required />
-                                    </div>
-
-
-                                </form>
-                            </div> */}
-
-
-
-
                         </div>
 
                     </Modal>
+
+                    <RecordModal
+                        isOpen={modalIsOpen}
+                        amount={amount}
+                        account={account}
+                        cashReserves={cashReserves}
+                        categories={categories}
+                        targetAccount={targetAccount}
+                        onRequestClose={() => {
+                            console.log(`Setting isOpen to false`);
+                            setIsOpen(false)
+                        }}
+                        onSuccess={(response) => {
+                            setData([response.data.data, ...data]);
+                        }}
+                        date="9 Sept"
+                        category={category}
+                        addCategoryClick={() => setAddModalIsOpen(true)}
+                    />
                 </div>
             </div >
         </div >

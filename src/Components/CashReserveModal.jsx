@@ -6,19 +6,6 @@ import ColorSelector from "./ColorSelector";
 import { IconSelector } from "./IconSelector/IconSelector";
 import { Button, Modal } from 'flowbite-react';
 
-const customStyles = {
-    content: {
-        top: "50%",
-        left: "50%",
-        right: "auto",
-        bottom: "auto",
-        marginRight: "-50%",
-        transform: "translate(-50%,-50%)",
-        backgroundColor: 'whitesmoke',
-    },
-};
-// Modal.setAppElement('#root');
-
 const CashReserveModal = ({
     name = "Cash",
     balance = 0,
@@ -27,7 +14,6 @@ const CashReserveModal = ({
     icon = "Rent/Mortgage",
     id = null,
     isOpen,
-    onAfterOpen,
     onRequestClose,
     onSuccess
 }) => {
