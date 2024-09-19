@@ -29,7 +29,7 @@ Modal.setAppElement('#root');
 const Records = () => {
     let subtitle;
     const [modalIsOpen, setIsOpen] = useState(false);
-    const [amount, setAmount] = useState("10000");
+    const [amount, setAmount] = useState(10000);
     const [account, setAccount] = useState("Cash");
     const [currency, setCurrency] = useState("FCFA");
     const [color, setColor] = useState("Red");
@@ -52,6 +52,12 @@ const Records = () => {
     const [targetAccount, setTargetAccount] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
     const [deleteAllRecords, setDeleteAllRecords] = useState(false);
+    const [filterCashReserve, setFilterCashReserve] = useState("all");
+    const [filterCategory, setFilterCategory] = useState("all");
+    const [filterData, setFilterData] = useState([]);
+
+    const [recordId, setRecordId] = useState("");
+
 
 
 
@@ -136,6 +142,31 @@ const Records = () => {
             setSelectedIds([]);
         }
     }, [selectAll]);
+
+    useEffect(() => {
+        let filter1 = data;
+        if (filterCashReserve) {
+            filter1 = filter1.filter((e) => {
+                if (filterCashReserve == "all")
+                    return e;
+                return e.sourceAccount._id == filterCashReserve
+            }
+            )
+        }
+
+        if (filterCategory) {
+            filter1 = filter1.filter((e) => {
+                if (filterCategory == "all")
+                    return e;
+                return e.category._id == filterCategory
+            })
+        }
+
+        setFilterData([...filter1]);
+
+
+
+    }, [filterCashReserve, filterCategory, data])
 
 
     const formatNumber = (num) => {
@@ -242,7 +273,11 @@ const Records = () => {
                     </div>
                     <div classNameName="flex flex-col px-3 py-1 gap-2">
                         <p>Cash reserve</p>
-                        <select id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <select value={filterCashReserve} id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            onChange={(e) => {
+                                console.log("Select changed value, the new value is ", e.target.value);
+                                setFilterCashReserve(e.target.value)
+                            }}>
                             <option value="all">All</option>
                             {
                                 cashReserves.map((item, index) => <option value={item._id} key={index}>{item.name}</option>)
@@ -251,7 +286,11 @@ const Records = () => {
                     </div>
                     <div className="flex flex-col px-3 py-1 gap-2">
                         <p>Categories</p>
-                        <select id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <select id="countries" value={filterCategory} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            onChange={(e) => {
+                                console.log("Select changed value, the new value is ", e.target.value);
+                                setFilterCategory(e.target.value)
+                            }}>
                             <option value="all">All</option>
                             {
                                 categories.map((item, index) => <option value={item._id} key={index}>{item.name}</option>)
@@ -283,7 +322,7 @@ const Records = () => {
 
                     <div className="flex flex-col gap-3 mt-4">
                         {
-                            data.map((e, index) => {
+                            filterData.map((e, index) => {
                                 let date = new Date(e.date);
                                 let checked = selectedIds.some((id) => {
                                     return e._id == id
@@ -332,6 +371,16 @@ const Records = () => {
                                             </div>}>
                                                 <Dropdown.Item onClick={() => {
                                                     setSelectedId(e._id);
+                                                    console.log("amount gotten from API", e.amount);
+                                                    console.log("account gotten from API", e.sourceAccount);
+                                                    console.log("category gotten from API", e.category_id);
+
+
+                                                    setAmount(e.amount);
+                                                    setAccount(e.sourceAccount._id);
+                                                    setCategory(e.category._id);
+
+                                                    setIsOpen(true);
                                                 }}>Edit</Dropdown.Item>
                                                 <Dropdown.Item onClick={() => {
                                                     setSelectedId(e._id);
@@ -345,183 +394,6 @@ const Records = () => {
                             })
                         }
                     </div>
-
-                    <Modal
-                        isOpen={false}
-                        onAfterOpen={afterOpenModal}
-                        onRequestClose={closeModal}
-                        style={customStyles}
-                        contentLabel="Transfer, income and expense records"
-                    >
-                        <div className="w-full flex justify-end items-end">
-                            <button onClick={() => closeModal()} className="w-8 h-8 bg-[#3C5A64] rounded-full text-white shadow-md">X</button>
-                        </div>
-                        <div className="w-full h-full flex flex-row justify-center">
-                            <div className="w-full flex flex-col gap-4 mt-2">
-                                <div className="w-full p-3" style={{
-                                    backgroundColor: backgroundColor ? backgroundColor : "00897b",
-                                    transition: "all .4s ease-in-out"
-                                }}>
-                                    <div className="grid grid-cols-3 border-2 border-red-100 rounded-md">
-                                        {
-                                            recordTypes.map((item, index) => {
-                                                return <span onClick={() => setType(item)} key={index} className={`text-center ${type === item ? 'bg-white' : ''} ${index + 1 < recordTypes.length ? 'border-r-2' : ''} border-red-100 cursor-pointer`}>{item[0].toUpperCase() + item.substring(1)}</span>
-                                            })
-                                        }
-                                    </div>
-                                    {
-                                        type == "transfer" ? (
-                                            <>
-                                                <div className="flex flex-col gap-2 items-center">
-                                                    <label htmlFor="">Amount</label>
-                                                    <input type="text" name="amount" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-[#000] focus:border-[#000] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-                                                    <div className="flex flex-row gap-2 items-center w-full justify-between">
-                                                        <div className="flex flex-col">
-                                                            <label htmlFor="">From</label>
-                                                            <select id="from" value={account} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                                onChange={(e) => {
-                                                                    console.log("Select changed value, the new value is ", e.target.value);
-                                                                    setAccount(e.target.value)
-                                                                }}>
-                                                                {
-                                                                    cashReserves.map((e, index) => <option value={e._id}>{e.name}</option>)
-                                                                }
-                                                            </select>
-                                                        </div>
-                                                        <FaArrowRight className="items-center" />
-                                                        <div className="flex flex-col">
-                                                            <label htmlFor="">To</label>
-                                                            <select id="to" value={targetAccount} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                                onChange={(e) => {
-                                                                    console.log("Select changed value, the new value is ", e.target.value);
-                                                                    setTargetAccount(e.target.value)
-                                                                }}>
-                                                                {
-                                                                    cashReserves.map((e, index) => <option value={e._id}>{e.name}</option>)
-                                                                }
-                                                            </select>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-
-                                            </>
-                                        ) : (
-                                            <><div className="justify-center items-center mt-2">
-                                                <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Account</label>
-                                                <select id="countries" value={account} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                    onChange={(e) => {
-                                                        console.log("Select changed value, the new value is ", e.target.value);
-                                                        setAccount(e.target.value)
-                                                    }}
-                                                >
-                                                    {
-                                                        cashReserves.map((e, index) => <option value={e._id}>{e.name}</option>)
-                                                    }
-                                                </select>
-                                            </div>
-                                                <div className="flex flex-row gap-2">
-                                                    <div>
-                                                        <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Amount</label>
-
-                                                        <div class="relative">
-                                                            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                                                                {
-                                                                    type == "expense" ? <IconRenderer backgroundColor="red" name={"minus"} size={16} /> : <IconRenderer backgroundColor="green" name={"plus"} size={16} />}
-                                                            </div>
-                                                            <input type="add" value={amount} id="default-add" className="items-center block w-full p-2.5 ps-10 text-sm text-right text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-12 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=" 0" required
-                                                                onChange={(e) => {
-                                                                    console.log("Select changed value, the new value is ", e.target.value);
-                                                                    setAmount(e.target.value)
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="justify-center items-center">
-                                                        <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Currency</label>
-                                                        <select id="countries" value={currency} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                            onChange={(e) => {
-                                                                console.log("Select changed value, the new value is ", e.target.value);
-                                                                setCurrency(e.target.value)
-                                                            }}
-                                                        >
-                                                            <option selected>XAF</option>
-                                                        </select>
-                                                    </div>
-
-                                                </div></>
-                                        )
-                                    }
-
-                                </div>
-
-                                <div className="flex flex-col items-center">
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div>
-                                            <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
-                                            <div className="flex flex-row items-center gap-1">
-                                                <select id="category" value={category} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                    onChange={(e) => {
-                                                        console.log("Select changed value, the new value is ", e.target.value);
-                                                        setCategory(e.target.value)
-                                                    }}
-                                                >
-                                                    {
-                                                        categories.map((e, index) => <option value={e._id}>{e.name}</option>)
-                                                    }
-                                                </select>
-                                                <button onClick={() => setAddModalIsOpen(true)}>
-                                                    < IconRenderer backgroundColor="grey" name={"plus"} size={18} />
-                                                </button>
-
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Labels</label>
-                                            <select id="countries" value={label} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                onChange={(e) => {
-                                                    console.log("Select changed value, the new value is ", e.target.value);
-                                                    setLabel(e.target.value)
-                                                }}
-                                            >
-                                                <option selected>Choose</option>
-                                                <option value="Bank">Bank</option>
-                                                <option value="Momo">Momo</option>
-                                            </select>
-                                        </div>
-
-                                        <div>
-                                            <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date</label>
-                                            <input id="countries" value={date} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                onChange={(e) => {
-                                                    console.log("Select changed value, the new value is ", e.target.value);
-                                                    setDate(e.target.value)
-                                                }}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Time</label>
-                                            <input id="countries" value={time} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                onChange={(e) => {
-                                                    console.log("Select changed value, the new value is ", e.target.value);
-                                                    setTime(e.target.value)
-                                                }} />
-                                        </div>
-                                    </div>
-                                    <div className="mt-2 flex flex-col items-center justify-center ">
-                                        <button className="text-white bg-[#3C5A64] w-full py-1 px-6 rounded-full"
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                addRecords()
-                                            }}>Add record</button>
-                                        <a href="Add and create another" className="underline mt-2">Add and create another</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </Modal>
 
                     <RecordModal
                         isOpen={modalIsOpen}
@@ -537,7 +409,7 @@ const Records = () => {
                         onSuccess={(response) => {
                             setData([response.data.data, ...data]);
                         }}
-                        date="9 Sept"
+                        date="2024-09-19 10:23"
                         category={category}
                         addCategoryClick={() => setAddModalIsOpen(true)}
                     />

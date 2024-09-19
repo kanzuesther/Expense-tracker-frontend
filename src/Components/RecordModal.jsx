@@ -5,6 +5,8 @@ import CashReserveSelect from "../CashReserveSelect";
 import IconRenderer from "./IconRenderer";
 import { Modal } from "flowbite-react";
 import { FaArrowRight } from "react-icons/fa";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const RecordModal = ({
     isOpen,
@@ -28,7 +30,7 @@ const RecordModal = ({
     const [typeState, setType] = useState(type);
     const [categoryState, setCategory] = useState(category);
     const [targetAccountState, setTargetAccount] = useState(targetAccount);
-    const [dateState, setDate] = useState(date);
+    const [dateState, setDate] = useState(new Date(date));
 
     const [backgroundColor, setBackgroundColor] = useState('#3C5A64');
     const [label, setLabel] = useState('');
@@ -231,22 +233,16 @@ const RecordModal = ({
                                         </select>
                                     </div>
 
-                                    <div>
-                                        <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date</label>
-                                        <input id="countries" value={date} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    <div className="items-center">
+                                        <label for="date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date</label>
+                                        {/* <input id="date" value={date} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                             onChange={(e) => {
                                                 console.log("Select changed value, the new value is ", e.target.value);
                                                 setDate(e.target.value)
                                             }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Time</label>
-                                        <input id="countries" value={time} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                            onChange={(e) => {
-                                                console.log("Select changed value, the new value is ", e.target.value);
-                                                setTime(e.target.value)
-                                            }} />
+                                        /> */}
+                                        <DatePicker className="bg-gray-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 items-center dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" selected ={dateState} onChange={(date)=>setDate(date)} 
+                                            showTimeSelect/>
                                     </div>
                                 </div>
                                 <div className="mt-2 flex flex-col items-center justify-center ">

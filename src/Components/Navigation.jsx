@@ -3,10 +3,14 @@ import { LuLogOut } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
 import { FaBars } from 'react-icons/fa';
 import { Drawer } from 'flowbite-react';
+import AddRecordModal from './AddRecordsModal';
 
 import { useState } from 'react';
 
 function Navigation({ activeLink = "dashboard" }) {
+
+    const [modalIsOpen, setIsOpen] = useState(false);
+
     const links = [
         {
             id: 1,
@@ -42,6 +46,18 @@ function Navigation({ activeLink = "dashboard" }) {
 
     const [drawerIsOpen, setDrawerIsOpen] = useState(false);
 
+    function openModal() {
+        setIsOpen(true);
+    }
+
+    function afterOpenModal() {
+        subtitle.style.color = '#000';
+    }
+
+    function closeModal() {
+        setIsOpen(false);
+    }
+
     return (
         <div className="w-full px-3 md:px-6 xl:px-[80px] py-2 md:py-3 bg-white flex flex-row justify-between items-center">
             <div className="flex flex-row items-center gap-3">
@@ -56,7 +72,7 @@ function Navigation({ activeLink = "dashboard" }) {
                 }
             </div>
             <div className="flex flex-row items-center gap-3">
-                <button className="rounded-md px-3 py-1 text-white font-medium text-lg bg-[#455A64] hidden md:block">
+                <button  onClick={() => openModal()} className="rounded-md px-3 py-1 text-white font-medium text-lg bg-[#455A64] hidden md:block">
                     <span>+</span>
                     <span>{" "}Record</span>
                 </button>

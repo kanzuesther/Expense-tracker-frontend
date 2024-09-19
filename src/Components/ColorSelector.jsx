@@ -3,7 +3,7 @@ import { Dropdown } from "flowbite-react";
 import { LuChevronDown } from "react-icons/lu";
 
 const ColorSelector = ({
-    colors = ["#26c6da", "#0097a7", "#0d47a1", "#1565c0", "#455a64", "#6a1b9a", "#26c6da", "#0097a7", "#0d47a1", "#1565c0", "#455a64", "#6a1b9a", "#26c6da", "#0097a7", "#0d47a1", "#1565c0", "#455a64", "#6a1b9a"],
+    colors = ["#26c6da", "#0097a7", "#0d47a1", "#1565c0", "#455a64", "#6a1b9a","#FF6F61","#FFC1A1","#FFB300","#FF7043","#00ACC1","#26A69A","#FFF59D","#808000","#8B4513","#D35B27","#E97451"],
     onColorSelect
 }) => {
     const [selectedColor, setSelectedColor] = useState(colors[0]);
