@@ -58,35 +58,9 @@ const Records = () => {
 
     const [recordId, setRecordId] = useState("");
 
-
-
-
-
     const [backgroundColor, setBackgroundColor] = useState("");
 
     const recordTypes = ["expense", "income", "transfer"];
-
-
-    function addRecords() {
-        const formData = {
-            amount, currency, color, category, label, date, time,
-            sourceAccount: account, type, targetAccount
-        }
-        axios.post(`${API_URL}/api/v1/add-expense`, formData).then((response) => {
-            console.log(response.data);
-
-            let dummy = data;
-            setData([response.data.data, ...dummy]);
-            closeModal();
-        })
-            .catch((response) => {
-                console.log('error in the request')
-                console.log(data);
-
-                console.log("Error is");
-                console.log(response)
-            })
-    }
 
     useEffect(() => {
         axios.get(`${API_URL}/api/v1/get-expenses`)
@@ -126,7 +100,6 @@ const Records = () => {
     }, [account]);
 
     useEffect(() => {
-        console.log(`Data changed, getting the total`);
         let total = 0;
         data.forEach((e) => {
             total += (e.type === 'expense' ? -1 : 1) * e.amount;
@@ -147,10 +120,10 @@ const Records = () => {
         let filter1 = data;
         if (filterCashReserve) {
             filter1 = filter1.filter((e) => {
-                if (filterCashReserve == "all")
-                    return e;
-                return e.sourceAccount._id == filterCashReserve
-            }
+                    if (filterCashReserve == "all")
+                        return e;
+                    return e.sourceAccount._id == filterCashReserve
+                 }
             )
         }
 
@@ -166,7 +139,11 @@ const Records = () => {
 
 
 
-    }, [filterCashReserve, filterCategory, data])
+    }, [filterCashReserve, filterCategory, data]);
+
+    useEffect(() => {
+        console.log(`Amount changed to: `, amount);
+    }, [amount]);
 
 
     const formatNumber = (num) => {
@@ -371,15 +348,14 @@ const Records = () => {
                                             </div>}>
                                                 <Dropdown.Item onClick={() => {
                                                     setSelectedId(e._id);
-                                                    console.log("amount gotten from API", e.amount);
-                                                    console.log("account gotten from API", e.sourceAccount);
-                                                    console.log("category gotten from API", e.category_id);
-
 
                                                     setAmount(e.amount);
                                                     setAccount(e.sourceAccount._id);
                                                     setCategory(e.category._id);
-
+                                                    setDate(e.date);
+                                                    setCurrency(e.currency);
+                                                    setType(e.type);
+                                                    
                                                     setIsOpen(true);
                                                 }}>Edit</Dropdown.Item>
                                                 <Dropdown.Item onClick={() => {
@@ -407,11 +383,29 @@ const Records = () => {
                             setIsOpen(false)
                         }}
                         onSuccess={(response) => {
-                            setData([response.data.data, ...data]);
+                            console.log("Display sucess message",response.data)
+                            let dummy = data;
+                            let record = response.data.data;
+
+                            dummy = dummy.filter((r) => {
+                                return r._id !== record._id
+                            })
+
+                            setData([response.data.data, ...dummy]);
+                            setSelectedId(null);
                         }}
                         date="2024-09-19 10:23"
                         category={category}
                         addCategoryClick={() => setAddModalIsOpen(true)}
+                        setAccount={setAccount}
+                        setAmount={setAmount}
+                        setCurrency={setCurrency}
+                        setType={setType}
+                        setTargetAccount={setTargetAccount}
+                        setDate={setDate}
+                        setCategory={setCategory}
+                        type={type}
+                        id={selectedId}
                     />
                 </div>
             </div >

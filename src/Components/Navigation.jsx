@@ -3,13 +3,44 @@ import { LuLogOut } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
 import { FaBars } from 'react-icons/fa';
 import { Drawer } from 'flowbite-react';
-import AddRecordModal from './AddRecordsModal';
+import RecordModal from "./RecordModal"
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { API_URL } from "../constants";
+import AddCategoryModal from "./AddCategoryModal";
 
-import { useState } from 'react';
+
 
 function Navigation({ activeLink = "dashboard" }) {
 
     const [modalIsOpen, setIsOpen] = useState(false);
+    const [amount, setAmount] = useState(10000);
+    const [account, setAccount] = useState("Cash");
+    const [currency, setCurrency] = useState("FCFA");
+    const [color, setColor] = useState("Red");
+    const [category, setCategory] = useState("");
+    const [label, setLabel] = useState("Choose");
+    const [date, setDate] = useState("");
+    const [time, setTime] = useState("");
+    const [type, setType] = useState("expense")
+
+
+    const [data, setData] = useState([]);
+    const [cashReserves, setCashReserves] = useState([]);
+    const [categories, setCategories] = useState([]);
+
+    const [selectedId, setSelectedId] = useState("");
+    const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
+    const [selectAll, setSelectAll] = useState("");
+    const [total, setTotal] = useState(0);
+    const [addModalIsOpen, setAddModalIsOpen] = useState(false);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [deleteAllRecords, setDeleteAllRecords] = useState(false);
+    const [targetAccount, setTargetAccount] = useState(null);
+
+
+
+
 
     const links = [
         {
@@ -58,6 +89,33 @@ function Navigation({ activeLink = "dashboard" }) {
         setIsOpen(false);
     }
 
+    useEffect(() => {
+        axios.get(`${API_URL}/api/v1/get-expenses`)
+            .then((response) => {
+                console.log("Data gotten from API")
+                console.log(response.data);
+                setData(response.data);
+            });
+
+        axios.get(`${API_URL}/api/v1/get-cashreserves`)
+            .then((response) => {
+                console.log("cashReserve gotten from API")
+                console.log(response.data);
+                setCashReserves(response.data)
+
+                setAccount(response.data[0]._id)
+            })
+
+        axios.get(`${API_URL}/api/v1/get-category`)
+            .then((response) => {
+                console.log("Category gotten from API")
+                console.log(response.data);
+                setCategories(response.data);
+
+                setCategory(response.data[0]._id)
+            })
+    }, []);
+
     return (
         <div className="w-full px-3 md:px-6 xl:px-[80px] py-2 md:py-3 bg-white flex flex-row justify-between items-center">
             <div className="flex flex-row items-center gap-3">
@@ -72,7 +130,7 @@ function Navigation({ activeLink = "dashboard" }) {
                 }
             </div>
             <div className="flex flex-row items-center gap-3">
-                <button  onClick={() => openModal()} className="rounded-md px-3 py-1 text-white font-medium text-lg bg-[#455A64] hidden md:block">
+                <button onClick={() => openModal()} className="rounded-md px-3 py-1 text-white font-medium text-lg bg-[#455A64] hidden md:block">
                     <span>+</span>
                     <span>{" "}Record</span>
                 </button>
@@ -98,6 +156,55 @@ function Navigation({ activeLink = "dashboard" }) {
                     </div>
                 </Drawer.Items>
             </Drawer>
+            <RecordModal
+                isOpen={modalIsOpen}
+                amount={amount}
+                account={account}
+                cashReserves={cashReserves}
+                categories={categories}
+                targetAccount={targetAccount}
+                onRequestClose={() => {
+                    console.log(`Setting isOpen to false`);
+                    setIsOpen(false)
+                }}
+                onSuccess={(response) => {
+                    console.log("Display sucess message", response.data)
+                    let dummy = data;
+                    let record = response.data.data;
+
+                    dummy = dummy.filter((r) => {
+                        return r._id !== record._id
+                    })
+
+                    setData([response.data.data, ...dummy]);
+                    setSelectedId(null);
+                }}
+                date="2024-09-19 10:23"
+                category={category}
+                addCategoryClick={() => setAddModalIsOpen(true)}
+                setAccount={setAccount}
+                setAmount={setAmount}
+                setCurrency={setCurrency}
+                setType={setType}
+                setTargetAccount={setTargetAccount}
+                setDate={setDate}
+                setCategory={setCategory}
+                type={type}
+                id={selectedId}
+            />
+            <AddCategoryModal
+                isOpen={addModalIsOpen}
+                onRequestClose={() => {
+                    setAddModalIsOpen(false);
+                    setIsOpen(true);
+                }}
+                onSuccess={(response) => {
+                    console.log("category added successfully");
+                    setCategories([...categories, response.data.data])
+                    setAddModalIsOpen(false);
+                    setIsOpen(true);
+                }}
+            />
         </div>
     )
 }

@@ -22,15 +22,22 @@ const RecordModal = ({
     onSuccess,
     date,
     addCategoryClick,
+    setAmount,
+    setAccount,
+    setCurrency,
+    setType,
+    setTargetAccount,
+    setDate,
+    setCategory,
     id = null
 }) => {
-    const [amountState, setAmount] = useState(amount);
-    const [accountState, setAccount] = useState(account);
-    const [currencyState, setCurrency] = useState(currency);
-    const [typeState, setType] = useState(type);
-    const [categoryState, setCategory] = useState(category);
-    const [targetAccountState, setTargetAccount] = useState(targetAccount);
-    const [dateState, setDate] = useState(new Date(date));
+    // const [amountState, setAmount] = useState(amount);
+    // const [accountState, setAccount] = useState(account);
+    // const [currencyState, setCurrency] = useState(currency);
+    // const [typeState, setType] = useState(type);
+    // const [categoryState, setCategory] = useState(category);
+    // const [targetAccountState, setTargetAccount] = useState(targetAccount);
+    // const [date, setDate] = useState(new Date(date));
 
     const [backgroundColor, setBackgroundColor] = useState('#3C5A64');
     const [label, setLabel] = useState('');
@@ -40,13 +47,13 @@ const RecordModal = ({
 
     function addRecord() {
         const formData = {
-            amount: amountState,
-            currency: currencyState,
-            category: categoryState,
-            date: dateState,
+            amount: amount,
+            currency: currency,
+            category: category,
+            date: date,
             sourceAccount: account,
-            type: typeState,
-            targetAccount: targetAccountState
+            type: type,
+            targetAccount: targetAccount
         }
 
         let method, url;
@@ -73,8 +80,9 @@ const RecordModal = ({
                 }
             })
             .catch((response) => {
+            
                 console.log('error in the request')
-                console.log(data);
+                console.log(response.data);
 
                 console.log("Error is");
                 console.log(response)
@@ -82,14 +90,14 @@ const RecordModal = ({
     }
 
     useEffect(() => {
-        if (accountState && cashReserves.length > 0) {
+        if (account && cashReserves.length > 0) {
             for (let i = 0; i < cashReserves.length; i++) {
-                if (cashReserves[i]._id === accountState) {
+                if (cashReserves[i]._id === account) {
                     setBackgroundColor(cashReserves[i].color);
                 }
             }
         }
-    }, [accountState]);
+    }, [account]);
 
     useEffect(() => {
         if (categories.length) {
@@ -116,12 +124,12 @@ const RecordModal = ({
                                 <div className="grid grid-cols-3 border-2 border-red-100 rounded-md">
                                     {
                                         recordTypes.map((item, index) => {
-                                            return <span onClick={() => setType(item)} key={index} className={`text-center ${typeState === item ? 'bg-white' : ''} ${index + 1 < recordTypes.length ? 'border-r-2' : ''} border-red-100 cursor-pointer`}>{item[0].toUpperCase() + item.substring(1)}</span>
+                                            return <span onClick={() => setType(item)} key={index} className={`text-center ${type === item ? 'bg-white' : ''} ${index + 1 < recordTypes.length ? 'border-r-2' : ''} border-red-100 cursor-pointer`}>{item[0].toUpperCase() + item.substring(1)}</span>
                                         })
                                     }
                                 </div>
                                 {
-                                    typeState == "transfer" ? (
+                                    type == "transfer" ? (
                                         <>
                                             <div className="flex flex-col gap-2 items-center">
                                                 <label htmlFor="">Amount</label>
@@ -131,7 +139,7 @@ const RecordModal = ({
                                                         <label htmlFor="">From</label>
                                                         <CashReserveSelect
                                                             cashReserves={cashReserves}
-                                                            value={accountState}
+                                                            value={account}
                                                             onChange={(e) => setAccount(e.target.value)}
                                                         />
                                                     </div>
@@ -140,7 +148,7 @@ const RecordModal = ({
                                                         <label htmlFor="">To</label>
                                                         <CashReserveSelect
                                                             cashReserves={cashReserves}
-                                                            value={targetAccountState}
+                                                            value={targetAccount}
                                                             onChange={(e) => setTargetAccount(e.target.value)}
                                                         />
                                                     </div>
@@ -155,7 +163,7 @@ const RecordModal = ({
                                                 <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Account</label>
                                                 <CashReserveSelect
                                                     cashReserves={cashReserves}
-                                                    value={accountState}
+                                                    value={account}
                                                     onChange={(e) => {
                                                         setAccount(e.target.value);
                                                     }}
@@ -168,9 +176,9 @@ const RecordModal = ({
                                                     <div class="relative">
                                                         <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                                                             {
-                                                                typeState == "expense" ? <IconRenderer backgroundColor="red" name={"minus"} size={16} /> : <IconRenderer backgroundColor="green" name={"plus"} size={16} />}
+                                                                type == "expense" ? <IconRenderer backgroundColor="red" name={"minus"} size={16} /> : <IconRenderer backgroundColor="green" name={"plus"} size={16} />}
                                                         </div>
-                                                        <input type="add" value={amountState} id="default-add" className="items-center block w-full p-2.5 ps-10 text-sm text-right text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-12 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=" 0" required
+                                                        <input type="add" value={amount} id="default-add" className="items-center block w-full p-2.5 ps-10 text-sm text-right text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-12 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder=" 0" required
                                                             onChange={(e) => {
                                                                 console.log("Select changed value, the new value is ", e.target.value);
                                                                 setAmount(e.target.value)
@@ -181,7 +189,7 @@ const RecordModal = ({
 
                                                 <div className="justify-center items-center">
                                                     <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Currency</label>
-                                                    <select id="countries" value={currencyState} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                    <select id="countries" value={currency} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                                         onChange={(e) => {
                                                             console.log("Select changed value, the new value is ", e.target.value);
                                                             setCurrency(e.target.value)
@@ -203,7 +211,7 @@ const RecordModal = ({
                                     <div>
                                         <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
                                         <div className="flex flex-row items-center gap-1">
-                                            <select id="category" value={categoryState} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            <select id="category" value={category} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                                 onChange={(e) => {
                                                     console.log("Select changed value, the new value is ", e.target.value);
                                                     setCategory(e.target.value)
@@ -241,8 +249,11 @@ const RecordModal = ({
                                                 setDate(e.target.value)
                                             }}
                                         /> */}
-                                        <DatePicker className="bg-gray-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 items-center dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" selected ={dateState} onChange={(date)=>setDate(date)} 
-                                            showTimeSelect/>
+                                        <DatePicker className="bg-gray-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 items-center dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                                            selected={date} 
+                                            onChange={(date)=>setDate(date)} 
+                                            // showTimeSelect
+                                        />
                                     </div>
                                 </div>
                                 <div className="mt-2 flex flex-col items-center justify-center ">
