@@ -13,6 +13,8 @@ import Budget from './Components/Budget.jsx';
 import Reminders from './Components/Reminders.jsx';
 import ForgotPassword from './Components/ForgotPassword.jsx';
 import ResetPassword from './Components/ResetPassword.jsx';
+import AdminDashboard from './Pages/admin/Dashboard.jsx';
+import Expenses from './Pages/admin/Expenses.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -31,6 +33,8 @@ root.render(
           <Route path="/reminders" element={<Reminders />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/kwallet-admin" element={<AdminDashboard />} />
+          <Route path="/admin-expense" element={<Expenses />} />
         </Routes>
       </Router>
     </GlobalProvider>
