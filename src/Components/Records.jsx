@@ -67,9 +67,7 @@ const Records = () => {
     useEffect(() => {
         axios.get(`${API_URL}/api/v1/get-expenses`)
             .then((response) => {
-                console.log("Data gotten from API")
-                console.log(response.data);
-                setData(response.data);
+                setData([...response.data]);
             });
 
         axios.get(`${API_URL}/api/v1/get-cashreserves`)
@@ -323,7 +321,77 @@ const Records = () => {
 
                     <div className="flex flex-col gap-3 mt-4">
                         {
-                            filterData.map((e, index) => {
+                           filterData && filterData?.length > 0 ? filterData?.map((e, index) => {
+                                let date = new Date(e.date);
+                                let checked = selectedIds.some((id) => {
+                                    return e._id == id
+                                });
+
+                                return (
+                                    <div key={index} className=" flex flex-row justify-between items-center w-full px-6 py-3 rounded-md bg-white">
+                                        <div className="flex flex-row gap-4 items-center">
+                                            <input checked={checked} onChange={() => {
+                                                if (checked) {
+                                                    let array = selectedIds.filter((id) => id !== e._id);
+                                                    setSelectedIds([...array]);
+                                                } else {
+                                                    setSelectedIds([...selectedIds, e._id]);
+                                                }
+                                            }} id="checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+
+                                            <div className="w-[32px] h-[32px] p-2 rounded-full flex flex-row items-center" style={{
+                                                backgroundColor: e.category?.color
+
+                                            }}>
+                                                <IconRenderer name={e.category?.icon} size={16} />
+                                            </div>
+
+                                            <div>
+                                                <span>{e.category?.name}</span>
+                                            </div>
+
+                                            <div className="flex flex-row gap-2 items-center">
+                                                <span className="w-[5px] h-[5px] rounded-full bg-blue-600"></span>
+                                                <span>{e?.sourceAccount?.name}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-row items-center gap-2">
+                                            <div>
+                                                {getFormattedDate(date)}
+                                            </div>
+
+                                            <Dropdown label="" dismissOnClick={false} renderTrigger={() => <div className="cursor-pointer flex flex-row items-center gap-2">
+
+                                                <p className={`${e.type == "expense" ? "text-red-500" : "text-green-500"} flex flex-row items-center`} >
+                                                    <IconRenderer name={e.type == "expense" ? "minus" : "plus"} size={8} backgroundColor={e.type == "expense" ? "red" : "green"} />
+                                                    {formatNumber(e.amount)}
+                                                </p>
+                                                <FiMoreVertical size={16} />
+                                            </div>}>
+                                                <Dropdown.Item onClick={() => {
+                                                    setSelectedId(e._id);
+
+                                                    setAmount(e.amount);
+                                                    setAccount(e.sourceAccount._id);
+                                                    setCategory(e.category._id);
+                                                    setDate(e.date);
+                                                    setCurrency(e.currency);
+                                                    setType(e.type);
+                                                    
+                                                    setIsOpen(true);
+                                                }}>Edit</Dropdown.Item>
+                                                <Dropdown.Item onClick={() => {
+                                                    setSelectedId(e._id);
+
+                                                    setDeleteModalIsOpen(true);
+                                                }}>Delete</Dropdown.Item>
+                                            </Dropdown>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                            :
+                            data?.map((e, index) => {
                                 let date = new Date(e.date);
                                 let checked = selectedIds.some((id) => {
                                     return e._id == id
