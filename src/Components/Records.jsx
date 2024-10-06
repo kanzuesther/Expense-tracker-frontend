@@ -11,6 +11,7 @@ import { getFormattedDate } from "../utils/DateFormat";
 import AddCategoryModal from "./AddCategoryModal";
 import { FaArrowRight } from 'react-icons/fa';
 import RecordModal from "./RecordModal";
+import { RiDeleteBinLine } from 'react-icons/ri';
 
 
 const customStyles = {
@@ -43,6 +44,7 @@ const Records = () => {
     const [data, setData] = useState([]);
     const [cashReserves, setCashReserves] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [filterTransactions,setFilterFilteredTransactions] = useState([])
 
     const [selectedId, setSelectedId] = useState("");
     const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
@@ -122,8 +124,19 @@ const Records = () => {
             filter1 = filter1.filter((e) => {
                     if (filterCashReserve == "all")
                         return e;
-                    return e.sourceAccount._id == filterCashReserve
+
+                    return e.sourceAccount && e.sourceAccount._id == filterCashReserve
                  }
+            )
+        }
+
+        if(filterTransactions){
+            filter1 = filter1.filter((e) => {
+                if (filterTransactions == "all")
+                    return e;
+
+                return e.type && e.type == filterTransactions
+             }
             )
         }
 
@@ -131,7 +144,7 @@ const Records = () => {
             filter1 = filter1.filter((e) => {
                 if (filterCategory == "all")
                     return e;
-                return e.category._id == filterCategory
+                return e.category && e.category._id == filterCategory
             })
         }
 
@@ -139,7 +152,7 @@ const Records = () => {
 
 
 
-    }, [filterCashReserve, filterCategory, data]);
+    }, [filterCashReserve, filterCategory, filterTransactions, data]);
 
     useEffect(() => {
         console.log(`Amount changed to: `, amount);
@@ -235,7 +248,7 @@ const Records = () => {
 
 
             <div className="mt-4 px-6 flex-1 flex flex-row gap-3">
-                <div className="h-screen bg-[#fafbfd] w-1/5 p-3 rounded-md flex flex-col gap-[24px]">
+                <div className="h-[120vh] bg-[#fafbfd] w-1/5 p-3 rounded-md flex flex-col gap-[24px]">
                     <h5 className="text-2xl font-bold">Records</h5>
                     <button className="rounded-full px-3 py-1 bg-[#FFB74D] text-white" onClick={() => openModal()}>+ Add</button>
                     <label for="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
@@ -247,6 +260,17 @@ const Records = () => {
                         </div>
                         <input type="search" id="default-search" className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                         <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+                    </div>
+                    <div classNameName="flex flex-col px-3 py-1 gap-2">
+                        <p>Filter Transactions</p>
+                        <select value={filterTransactions} id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            onChange={(e) => {
+                                setFilterFilteredTransactions(e.target.value)
+                            }}>
+                            <option value="all">All</option>
+                            <option>income</option>
+                            <option>expense</option>
+                        </select>
                     </div>
                     <div classNameName="flex flex-col px-3 py-1 gap-2">
                         <p>Cash reserve</p>
@@ -318,14 +342,14 @@ const Records = () => {
                                             }} id="checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
 
                                             <div className="w-[32px] h-[32px] p-2 rounded-full flex flex-row items-center" style={{
-                                                backgroundColor: e.category.color
+                                                backgroundColor: e.category?.color
 
                                             }}>
-                                                <IconRenderer name={e.category.icon} size={16} />
+                                                <IconRenderer name={e.category?.icon} size={16} />
                                             </div>
 
                                             <div>
-                                                <span>{e.category.name}</span>
+                                                <span>{e.category?.name}</span>
                                             </div>
 
                                             <div className="flex flex-row gap-2 items-center">
