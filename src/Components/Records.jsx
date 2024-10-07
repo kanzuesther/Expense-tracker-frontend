@@ -12,6 +12,7 @@ import AddCategoryModal from "./AddCategoryModal";
 import { FaArrowRight } from 'react-icons/fa';
 import RecordModal from "./RecordModal";
 import axiosInstance from "../utils/axiosInstance";
+import { RiDeleteBinLine } from "react-icons/ri";
 
 
 const customStyles = {
