@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import DonutChart from "./Donut";
 import axios from "axios";
 import { API_URL } from "../../constants";
+import axiosInstance from "../../utils/axiosInstance";
 
 
 const ExpenseStructureCard = () => {
@@ -9,7 +10,7 @@ const ExpenseStructureCard = () => {
     const [total, setTotal] = useState(0);
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/v1/get-expenses`)
+        axiosInstance.get(`${API_URL}/api/v1/get-expenses`)
             .then((response) => {
                 let chartData = {};
                 let total = 0;
@@ -33,9 +34,6 @@ const ExpenseStructureCard = () => {
                 setTotal(total);
 
                 let data = {labels: [], datasets: []}
-
-                console.log("The chartData is");
-                console.log(chartData);
 
                 let listOfCategories = Object.keys(chartData);
                 data.labels = listOfCategories;

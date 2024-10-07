@@ -1,6 +1,6 @@
 import { useEffect,useState } from "react";
-import axios from "axios";
 import { API_URL } from "../../constants";
+import axiosInstance from "../../utils/axiosInstance";
 
 
 const CashFlowCard = () => {
@@ -15,7 +15,7 @@ const CashFlowCard = () => {
     useEffect(() => {
         let income = 0;
         let expense = 0;
-        axios.get(`${API_URL}/api/v1/get-expenses`)
+        axiosInstance.get(`${API_URL}/api/v1/get-expenses`)
             .then((response) => {
             console.log("Income gotten from API")
             console.log(response)

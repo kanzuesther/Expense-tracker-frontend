@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from '../styles/signup.module.css'
 import "../App.css";
+import axiosInstance from '../utils/axiosInstance';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -14,7 +15,7 @@ const ForgotPassword = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        axios.post('http://localhost:5000/auth/forgot-password', {
+        axiosInstance.post('http://localhost:5000/auth/forgot-password', {
             email,
         }).then(response => {
             if (response.data.status) {

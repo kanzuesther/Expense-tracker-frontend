@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import styles from '../styles/signup.module.css'
 import "../App.css";
+import axiosInstance from '../utils/axiosInstance';
 
 const ResetPassword = () => {
     const [password, setPassword] = useState('');
@@ -15,7 +16,7 @@ const ResetPassword = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        axios.post('http://localhost:5000/auth/reset-password'+token, {
+        axiosInstance.post('http://localhost:5000/auth/reset-password'+token, {
             password,
         }).then(response => {
             if (response.data.status) {

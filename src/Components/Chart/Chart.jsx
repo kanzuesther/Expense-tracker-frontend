@@ -8,7 +8,7 @@ import {Chart,
     Tooltip,
     Legend,
     ArcElement,
-} from 'chart.js'
+} from 'chart.js'; 
 
 import {Chart as ReactChartJS, Line} from 'react-chartjs-2'
 import styled from 'styled-components'

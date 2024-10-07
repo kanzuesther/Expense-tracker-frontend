@@ -8,6 +8,7 @@ import { Dropdown } from "flowbite-react";
 import DeleteModal from "./DeleteModal";
 import { getFormattedDate } from "../utils/DateFormat";
 import { RiDeleteBinLine } from 'react-icons/ri';
+import axiosInstance from "../utils/axiosInstance";
 
 const customStyles = {
   content: {
@@ -43,7 +44,7 @@ const Reminders = () => {
 
 
   function addReminder() {
-    axios.post(`${API_URL}/api/v1/add-reminder`, {
+    axiosInstance.post(`${API_URL}/api/v1/add-reminder`, {
       name, reminder_cycle: cycle, date, amount, cash_reserve: cashreserve
     }).then((response) => {
       console.log(response.data);
@@ -55,7 +56,7 @@ const Reminders = () => {
   }
 
   useEffect(() => {
-    axios.get(`${API_URL}/api/v1/get-reminder`)
+    axiosInstance.get(`${API_URL}/api/v1/get-reminder`)
       .then((response) => {
         console.log("Reminders gotten from API")
         console.log(response.data);
@@ -68,7 +69,7 @@ const Reminders = () => {
         })
         setTotal(total);
       })
-    axios.get(`${API_URL}/api/v1/get-cashreserves`)
+    axiosInstance.get(`${API_URL}/api/v1/get-cashreserves`)
       .then((response) => {
         console.log("CashReserve gotten from API")
         console.log(response.data);
@@ -114,7 +115,7 @@ const Reminders = () => {
           onRequestClose={() => setDeleteModalIsOpen(false)}
           onDelete={() => {
             console.log("about to delete");
-            axios.delete(`${API_URL}/api/v1/delete-reminder/${selectedId}`)
+            axiosInstance.delete(`${API_URL}/api/v1/delete-reminder/${selectedId}`)
               .then((response) => {
                 let deletedData = response.data.data;
 
@@ -139,7 +140,7 @@ const Reminders = () => {
           onRequestClose={() => { setDeleteAllRecords(false) }}
           onDelete={() => {
             console.log("about to delete");
-            axios.delete(`${API_URL}/api/v1/delete-reminders`, {
+            axiosInstance.delete(`${API_URL}/api/v1/delete-reminders`, {
               data: {
                 selectedIds
               }

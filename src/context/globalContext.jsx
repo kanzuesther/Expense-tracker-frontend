@@ -1,6 +1,7 @@
 import React, { useState,getIncomes,incomes,totalIncome} from "react"
 import axios from "axios"
 import { expenses } from "../utils/Icons";
+import axiosInstance from "../utils/axiosInstance";
 
 const BASE_URL = "http://localhost:5000/api/v1/";
 
@@ -12,7 +13,7 @@ export const GlobalProvider = ({ children }) => {
     const [error, setError] = useState([null])
 //calculate Incomes
     const addIncome = async (income) => {
-        const response = await axios.post(`${BASE_URL}add-income`, income)
+        const response = await axiosInstance.post(`${BASE_URL}add-income`, income)
             .catch((err) => {
                 setError(err.response.data.message)
             })
@@ -21,12 +22,12 @@ export const GlobalProvider = ({ children }) => {
 
     }
     const getIncomes = async() =>{
-        const response = await axios.get(`${BASE_URL}get-income`)
+        const response = await axiosInstance.get(`${BASE_URL}get-income`)
         setIncomes(response.data)
         console.log(response.data)
     }
     const deleteIncome = async(id) =>{
-        const response = await axios.delete(`${BASE_URL}delete-income/${id}`);
+        const response = await axiosInstance.delete(`${BASE_URL}delete-income/${id}`);
         console.log("response: ", response)
         setIncomes(response.data.data)
         console.log(response.data)
@@ -34,7 +35,7 @@ export const GlobalProvider = ({ children }) => {
     }
 //calculate expense
     const addExpense = async (income) => {
-        const response = await axios.post(`${BASE_URL}add-expense`, income)
+        const response = await axiosInstance.post(`${BASE_URL}add-expense`, income)
             .catch((err) => {
                 setError(err.response.data.message)
             })
@@ -43,12 +44,12 @@ export const GlobalProvider = ({ children }) => {
 
     }
     const getExpenses = async() =>{
-        const response = await axios.get(`${BASE_URL}get-expenses`)
+        const response = await axiosInstance.get(`${BASE_URL}get-expenses`)
         setExpenses(response.data)
         console.log(response.data)
     }
     const deleteExpense= async(id) =>{
-        const response = await axios.delete(`${BASE_URL}delete-expense/${id}`);
+        const response = await axiosInstance.delete(`${BASE_URL}delete-expense/${id}`);
         console.log("response: ", response)
         setExpenses(response.data.data)
         console.log(response.data)

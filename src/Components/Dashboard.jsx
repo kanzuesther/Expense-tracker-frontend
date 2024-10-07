@@ -10,6 +10,7 @@ import axios from "axios"
 import { API_URL } from "../constants"
 import IconRenderer from "./IconRenderer"
 import { categories } from "./IconSelector/iconNames"
+import axiosInstance from "../utils/axiosInstance"
 
 
 const Dashboard = () => {
@@ -26,7 +27,7 @@ function closeModal() {
 }
 
 useEffect(() => {
-    axios.get(`${API_URL}/api/v1/get-cashreserves`)
+    axiosInstance.get(`${API_URL}/api/v1/get-cashreserves`)
         .then((response) => {
             console.log("Cash reserves gotten from API")
             console.log(response.data);
@@ -65,7 +66,7 @@ return (
                 </div>
             </div>
 
-            <div className="w-full flex justify-center items-center mt-4 gap-3">
+            {/* <div className="w-full flex justify-center items-center mt-4 gap-3">
                 <select id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     <option selected>Choose a country</option>
                     <option value="US">United States</option>
@@ -73,11 +74,11 @@ return (
                     <option value="FR">France</option>
                     <option value="DE">Germany</option>
                 </select>
-            </div>
+            </div> */}
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 px-3 md:px-6 xl:px-[80px] gap-3">
                 <ExpenseStructureCard />
                 <CashFlowCard />
-                <BalanceTrendCard />
+                {/* <BalanceTrendCard /> */}
             </div>
 
             <button className='md:hidden h-[40px] w-[40px] bg-[#455A64] rounded-full fixed right-6 bottom-3 text-white shadow-lg flex flex-col justify-center items-center'>

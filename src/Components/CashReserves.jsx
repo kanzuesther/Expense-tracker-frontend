@@ -10,6 +10,7 @@ import { LuGift } from "react-icons/lu";
 import { FiMoreVertical } from 'react-icons/fi'
 import { RiDeleteBinLine } from 'react-icons/ri'
 import IconRenderer from "./IconRenderer";
+import axiosInstance from "../utils/axiosInstance";
 
 
 
@@ -41,7 +42,7 @@ const CashReserves = () => {
 
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/v1/get-cashreserves`)
+        axiosInstance.get(`${API_URL}/api/v1/get-cashreserves`)
             .then((response) => {
                 console.log("CashReserve gotten from API")
                 console.log(response.data);
@@ -99,7 +100,7 @@ const CashReserves = () => {
                 onRequestClose={() => setDeleteModalIsOpen(false)}
                 onDelete={() => {
                     console.log("about to delete");
-                    axios.delete(`${API_URL}/api/v1/delete-cashreserves/${selectedId}`)
+                    axiosInstance.delete(`${API_URL}/api/v1/delete-cashreserves/${selectedId}`)
                         .then((response) => {
                             let deletedData = response.data.data;
 
@@ -124,7 +125,7 @@ const CashReserves = () => {
                 onRequestClose={() => { setDeleteAllRecords(false) }}
                 onDelete={() => {
                     console.log("about to delete");
-                    axios.delete(`${API_URL}/api/v1/delete-cashreserve`, {
+                    axiosInstance.delete(`${API_URL}/api/v1/delete-cashreserve`, {
                         data: {
                             selectedIds
                         }

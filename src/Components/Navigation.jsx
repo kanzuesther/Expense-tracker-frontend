@@ -1,6 +1,6 @@
 import React from 'react'
 import { LuLogOut } from 'react-icons/lu'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FaBars } from 'react-icons/fa';
 import { Drawer } from 'flowbite-react';
 import RecordModal from "./RecordModal"
@@ -8,8 +8,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_URL } from "../constants";
 import AddCategoryModal from "./AddCategoryModal";
-
-
+import axiosInstance from '../utils/axiosInstance';
+import { removeLocalStorageItem } from '../utils/storage';
+import { useContext } from 'react';
+import { AppContext } from '../context/appContext';
 
 function Navigation({ activeLink = "dashboard" }) {
 
@@ -38,9 +40,9 @@ function Navigation({ activeLink = "dashboard" }) {
     const [deleteAllRecords, setDeleteAllRecords] = useState(false);
     const [targetAccount, setTargetAccount] = useState(null);
 
+    const { user } = useContext(AppContext);
 
-
-
+    const navigate = useNavigate();
 
     const links = [
         {
@@ -81,35 +83,23 @@ function Navigation({ activeLink = "dashboard" }) {
         setIsOpen(true);
     }
 
-    function afterOpenModal() {
-        subtitle.style.color = '#000';
-    }
-
-    function closeModal() {
-        setIsOpen(false);
-    }
-
     useEffect(() => {
-        axios.get(`${API_URL}/api/v1/get-expenses`)
+        axiosInstance.get(`${API_URL}/api/v1/get-expenses`)
             .then((response) => {
                 console.log("Data gotten from API")
                 console.log(response.data);
                 setData(response.data);
             });
 
-        axios.get(`${API_URL}/api/v1/get-cashreserves`)
+        axiosInstance.get(`${API_URL}/api/v1/get-cashreserves`)
             .then((response) => {
-                console.log("cashReserve gotten from API")
-                console.log(response.data);
                 setCashReserves(response.data)
 
                 setAccount(response.data[0]._id)
             })
 
-        axios.get(`${API_URL}/api/v1/get-category`)
+        axiosInstance.get(`${API_URL}/api/v1/get-category`)
             .then((response) => {
-                console.log("Category gotten from API")
-                console.log(response.data);
                 setCategories(response.data);
 
                 setCategory(response.data[0]._id)
@@ -135,10 +125,19 @@ function Navigation({ activeLink = "dashboard" }) {
                     <span>{" "}Record</span>
                 </button>
                 <div className="flex flex-row gap-1 justify-center items-center">
-                    <div className='mr-2 w-10 h-10 rounded-full bg-[#455A64] text-white shadow-lg flex items-center justify-center'>
-                        <span>KK</span>
-                    </div>
-                    <Link to="/login">
+                    {
+                        user?.username && (
+                            <div className='mr-2 w-10 h-10 rounded-full bg-[#455A64] text-white shadow-lg flex items-center justify-center'>
+                                <span>{user?.username[0].toUpperCase()}</span>
+                            </div>
+                        )
+                    }
+                    <Link to="/login" onClick={(e) => {
+                        e.preventDefault()
+                        removeLocalStorageItem("user");
+
+                        navigate('/login');
+                    }}>
                         <LuLogOut size={20} />
                     </Link>
                 </div>

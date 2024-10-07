@@ -5,6 +5,7 @@ import { API_URL } from "../constants";
 import ColorSelector from "./ColorSelector";
 import { IconSelector } from "./IconSelector/IconSelector";
 import { Button, Modal } from 'flowbite-react';
+import axiosInstance from "../utils/axiosInstance";
 
 const CashReserveModal = ({
     name = "Cash",
@@ -37,17 +38,11 @@ const CashReserveModal = ({
 
         if (!idState) {
             // new cash reserve
-            method = axios.post;
+            method = axiosInstance.post;
             url = `${API_URL}/api/v1/add-cashreserves`;
-
-            // axios.post(`${API_URL}/api/v1/add-cashreserves`, data).then((response) => {
-            //     console.log('Cash reserve added successfully');
-            //     console.log(response.data)
-            //     onSuccess(response);
-            // })
         } else {
             // modifying an existing cash reserv
-            method = axios.put;
+            method = axiosInstance.put;
             url = `${API_URL}/api/v1/update-cashreserve/${idState}`;
         }
 
