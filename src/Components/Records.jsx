@@ -44,6 +44,7 @@ const Records = () => {
     const [data, setData] = useState([]);
     const [cashReserves, setCashReserves] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [filterTransactions,setFilterFilteredTransactions] = useState([])
 
     const [selectedId, setSelectedId] = useState("");
     const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
@@ -66,9 +67,7 @@ const Records = () => {
     useEffect(() => {
         axiosInstance.get(`${API_URL}/api/v1/get-expenses`)
             .then((response) => {
-                console.log("Data gotten from API")
-                console.log(response.data);
-                setData(response.data);
+                setData([...response.data]);
             });
 
         axiosInstance.get(`${API_URL}/api/v1/get-cashreserves`)
@@ -123,8 +122,19 @@ const Records = () => {
             filter1 = filter1.filter((e) => {
                     if (filterCashReserve == "all")
                         return e;
-                    return e.sourceAccount._id == filterCashReserve
+
+                    return e.sourceAccount && e.sourceAccount._id == filterCashReserve
                  }
+            )
+        }
+
+        if(filterTransactions){
+            filter1 = filter1.filter((e) => {
+                if (filterTransactions == "all")
+                    return e;
+
+                return e.type && e.type == filterTransactions
+             }
             )
         }
 
@@ -132,7 +142,7 @@ const Records = () => {
             filter1 = filter1.filter((e) => {
                 if (filterCategory == "all")
                     return e;
-                return e.category._id == filterCategory
+                return e.category && e.category._id == filterCategory
             })
         }
 
@@ -140,7 +150,7 @@ const Records = () => {
 
 
 
-    }, [filterCashReserve, filterCategory, data]);
+    }, [filterCashReserve, filterCategory, filterTransactions, data]);
 
     useEffect(() => {
         console.log(`Amount changed to: `, amount);
@@ -236,7 +246,7 @@ const Records = () => {
 
 
             <div className="mt-4 px-6 flex-1 flex flex-row gap-3">
-                <div className="h-screen bg-[#fafbfd] w-1/5 p-3 rounded-md flex flex-col gap-[24px]">
+                <div className="h-[120vh] bg-[#fafbfd] w-1/5 p-3 rounded-md flex flex-col gap-[24px]">
                     <h5 className="text-2xl font-bold">Records</h5>
                     <button className="rounded-full px-3 py-1 bg-[#FFB74D] text-white" onClick={() => openModal()}>+ Add</button>
                     {/* <label for="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
@@ -249,6 +259,17 @@ const Records = () => {
                         <input type="search" id="default-search" className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                         <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
                     </div> */}
+                    <div classNameName="flex flex-col px-3 py-1 gap-2">
+                        <p>Filter Transactions</p>
+                        <select value={filterTransactions} id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            onChange={(e) => {
+                                setFilterFilteredTransactions(e.target.value)
+                            }}>
+                            <option value="all">All</option>
+                            <option>income</option>
+                            <option>expense</option>
+                        </select>
+                    </div>
                     <div classNameName="flex flex-col px-3 py-1 gap-2">
                         <p>Cash reserve</p>
                         <select value={filterCashReserve} id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -300,7 +321,7 @@ const Records = () => {
 
                     <div className="flex flex-col gap-3 mt-4">
                         {
-                            filterData.map((e, index) => {
+                           filterData && filterData?.length > 0 ? filterData?.map((e, index) => {
                                 let date = new Date(e.date);
                                 let checked = selectedIds.some((id) => {
                                     return e._id == id
@@ -319,14 +340,84 @@ const Records = () => {
                                             }} id="checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
 
                                             <div className="w-[32px] h-[32px] p-2 rounded-full flex flex-row items-center" style={{
-                                                backgroundColor: e.category.color
+                                                backgroundColor: e.category?.color
 
                                             }}>
-                                                <IconRenderer name={e.category.icon} size={16} />
+                                                <IconRenderer name={e.category?.icon} size={16} />
                                             </div>
 
                                             <div>
-                                                <span>{e.category.name}</span>
+                                                <span>{e.category?.name}</span>
+                                            </div>
+
+                                            <div className="flex flex-row gap-2 items-center">
+                                                <span className="w-[5px] h-[5px] rounded-full bg-blue-600"></span>
+                                                <span>{e?.sourceAccount?.name}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-row items-center gap-2">
+                                            <div>
+                                                {getFormattedDate(date)}
+                                            </div>
+
+                                            <Dropdown label="" dismissOnClick={false} renderTrigger={() => <div className="cursor-pointer flex flex-row items-center gap-2">
+
+                                                <p className={`${e.type == "expense" ? "text-red-500" : "text-green-500"} flex flex-row items-center`} >
+                                                    <IconRenderer name={e.type == "expense" ? "minus" : "plus"} size={8} backgroundColor={e.type == "expense" ? "red" : "green"} />
+                                                    {formatNumber(e.amount)}
+                                                </p>
+                                                <FiMoreVertical size={16} />
+                                            </div>}>
+                                                <Dropdown.Item onClick={() => {
+                                                    setSelectedId(e._id);
+
+                                                    setAmount(e.amount);
+                                                    setAccount(e.sourceAccount._id);
+                                                    setCategory(e.category._id);
+                                                    setDate(e.date);
+                                                    setCurrency(e.currency);
+                                                    setType(e.type);
+                                                    
+                                                    setIsOpen(true);
+                                                }}>Edit</Dropdown.Item>
+                                                <Dropdown.Item onClick={() => {
+                                                    setSelectedId(e._id);
+
+                                                    setDeleteModalIsOpen(true);
+                                                }}>Delete</Dropdown.Item>
+                                            </Dropdown>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                            :
+                            data?.map((e, index) => {
+                                let date = new Date(e.date);
+                                let checked = selectedIds.some((id) => {
+                                    return e._id == id
+                                });
+
+                                return (
+                                    <div key={index} className=" flex flex-row justify-between items-center w-full px-6 py-3 rounded-md bg-white">
+                                        <div className="flex flex-row gap-4 items-center">
+                                            <input checked={checked} onChange={() => {
+                                                if (checked) {
+                                                    let array = selectedIds.filter((id) => id !== e._id);
+                                                    setSelectedIds([...array]);
+                                                } else {
+                                                    setSelectedIds([...selectedIds, e._id]);
+                                                }
+                                            }} id="checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+
+                                            <div className="w-[32px] h-[32px] p-2 rounded-full flex flex-row items-center" style={{
+                                                backgroundColor: e.category?.color
+
+                                            }}>
+                                                <IconRenderer name={e.category?.icon} size={16} />
+                                            </div>
+
+                                            <div>
+                                                <span>{e.category?.name}</span>
                                             </div>
 
                                             <div className="flex flex-row gap-2 items-center">

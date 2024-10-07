@@ -62,6 +62,7 @@ const Budget = () => {
             let dummy = data;
             dummy.push(response.data.data);
             setData(dummy)
+            setTotal((total)=> total + response?.data?.data?.amount)
             closeModal()
         })
     }
