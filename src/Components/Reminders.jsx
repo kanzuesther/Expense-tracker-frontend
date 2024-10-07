@@ -47,9 +47,10 @@ const Reminders = () => {
     axiosInstance.post(`${API_URL}/api/v1/add-reminder`, {
       name, reminder_cycle: cycle, date, amount, cash_reserve: cashreserve
     }).then((response) => {
-      console.log(response.data);
       let dummy = data;
-      dummy.push(response.data.data);
+      dummy.push(response?.data?.data);
+      // console.log('added remindal: ', response?.data?.data)
+      setTotal((total)=> total + response?.data?.data?.amount)
       setData(dummy)
       closeModal()
     })
