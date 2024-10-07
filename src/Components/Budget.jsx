@@ -7,7 +7,7 @@ import { Dropdown } from "flowbite-react";
 import { FiMoreVertical } from 'react-icons/fi'
 import DeleteModal from "./DeleteModal";
 import { RiDeleteBinLine } from 'react-icons/ri';
-
+import axiosInstance from "../utils/axiosInstance";
 
 
 const customStyles = {
@@ -56,7 +56,7 @@ const Budget = () => {
         console.log(`Posting..`)
         console.log(formData)
 
-        axios.post(`${API_URL}/api/v1/add-budget`, formData).then((response) => {
+        axiosInstance.post(`${API_URL}/api/v1/add-budget`, formData).then((response) => {
             console.log(response.data);
 
             let dummy = data;
@@ -68,7 +68,7 @@ const Budget = () => {
     }
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/v1/get-budget`)
+        axiosInstance.get(`${API_URL}/api/v1/get-budget`)
             .then((response) => {
                 console.log("Budget gotten from API")
                 console.log(response.data);
@@ -81,7 +81,7 @@ const Budget = () => {
                 })
                 setTotal(total);
             })
-        axios.get(`${API_URL}/api/v1/get-cashreserves`)
+        axiosInstance.get(`${API_URL}/api/v1/get-cashreserves`)
             .then((response) => {
                 console.log("Cashresreve gotten from API")
                 console.log(response.data);
@@ -90,7 +90,7 @@ const Budget = () => {
                 setCashreserve(response.data[0]._id)
             })
 
-        axios.get(`${API_URL}/api/v1/get-category`)
+        axiosInstance.get(`${API_URL}/api/v1/get-category`)
             .then((response) => {
                 console.log("Category gotten from API")
                 console.log(response.data);
@@ -135,7 +135,7 @@ const Budget = () => {
                 onRequestClose={() => setDeleteModalIsOpen(false)}
                 onDelete={() => {
                     console.log("about to delete");
-                    axios.delete(`${API_URL}/api/v1/delete-budget/${selectedId}`)
+                    axiosInstance.delete(`${API_URL}/api/v1/delete-budget/${selectedId}`)
                         .then((response) => {
                             let deletedData = response.data.data;
 
@@ -160,7 +160,7 @@ const Budget = () => {
                 onRequestClose={() => { setDeleteAllRecords(false) }}
                 onDelete={() => {
                     console.log("about to delete");
-                    axios.delete(`${API_URL}/api/v1/delete-budgets`, {
+                    axiosInstance.delete(`${API_URL}/api/v1/delete-budgets`, {
                         data: {
                             selectedIds
                         }

@@ -4,6 +4,7 @@ import { API_URL } from "../constants";
 import ColorSelector from "./ColorSelector";
 import { IconSelector } from "./IconSelector/IconSelector";
 import { Button, Modal } from 'flowbite-react';
+import axiosInstance from "../utils/axiosInstance";
 
 
 
@@ -33,11 +34,11 @@ const extraCategory = ({
 
         if (!idState) {
             // new cash reserve
-            method = axios.post;
+            method = axiosInstance.post;
             url = `${API_URL}/api/v1/add-category`;
         } else {
             // modifying an existing cash reserv
-            method = axios.put;
+            method = axiosInstance.put;
             url = `${API_URL}/api/v1/update-category/${idState}`;
         }
 

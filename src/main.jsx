@@ -13,30 +13,29 @@ import Budget from './Components/Budget.jsx';
 import Reminders from './Components/Reminders.jsx';
 import ForgotPassword from './Components/ForgotPassword.jsx';
 import ResetPassword from './Components/ResetPassword.jsx';
-import AdminDashboard from './Pages/admin/Dashboard.jsx';
-import Expenses from './Pages/admin/Expenses.jsx';
+import AppProvider from './context/appContext.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <GlobalStyle />
     <GlobalProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/records" element={<Records />} />
-          <Route path="/cash-reserves" element={<CashReserves />} />
-          <Route path="/budgets" element={<Budget />} />
-          <Route path="/reminders" element={<Reminders />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password/:token" element={<ResetPassword />} />
-          <Route path="/kwallet-admin" element={<AdminDashboard />} />
-          <Route path="/admin-expense" element={<Expenses />} />
-        </Routes>
-      </Router>
+      <AppProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/records" element={<Records />} />
+            <Route path="/cash-reserves" element={<CashReserves />} />
+            <Route path="/budgets" element={<Budget />} />
+            <Route path="/reminders" element={<Reminders />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+          </Routes>
+        </Router>
+      </AppProvider>
     </GlobalProvider>
   </React.StrictMode>
 );

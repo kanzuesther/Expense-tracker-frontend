@@ -11,7 +11,8 @@ import { getFormattedDate } from "../utils/DateFormat";
 import AddCategoryModal from "./AddCategoryModal";
 import { FaArrowRight } from 'react-icons/fa';
 import RecordModal from "./RecordModal";
-import { RiDeleteBinLine } from 'react-icons/ri';
+import axiosInstance from "../utils/axiosInstance";
+import { RiDeleteBinLine } from "react-icons/ri";
 
 
 const customStyles = {
@@ -65,12 +66,12 @@ const Records = () => {
     const recordTypes = ["expense", "income", "transfer"];
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/v1/get-expenses`)
+        axiosInstance.get(`${API_URL}/api/v1/get-expenses`)
             .then((response) => {
                 setData([...response.data]);
             });
 
-        axios.get(`${API_URL}/api/v1/get-cashreserves`)
+        axiosInstance.get(`${API_URL}/api/v1/get-cashreserves`)
             .then((response) => {
                 console.log("cashReserve gotten from API")
                 console.log(response.data);
@@ -79,7 +80,7 @@ const Records = () => {
                 setAccount(response.data[0]._id)
             })
 
-        axios.get(`${API_URL}/api/v1/get-category`)
+        axiosInstance.get(`${API_URL}/api/v1/get-category`)
             .then((response) => {
                 console.log("Category gotten from API")
                 console.log(response.data);
@@ -196,7 +197,7 @@ const Records = () => {
                 onRequestClose={() => setDeleteModalIsOpen(false)}
                 onDelete={() => {
                     console.log("about to delete");
-                    axios.delete(`${API_URL}/api/v1/delete-expense/${selectedId}`)
+                    axiosInstance.delete(`${API_URL}/api/v1/delete-expense/${selectedId}`)
                         .then((response) => {
                             let deletedData = response.data.data;
 
@@ -220,7 +221,7 @@ const Records = () => {
                 onRequestClose={() => { setDeleteAllRecords(false) }}
                 onDelete={() => {
                     console.log("about to delete");
-                    axios.delete(`${API_URL}/api/v1/delete-expenses`, {
+                    axiosInstance.delete(`${API_URL}/api/v1/delete-expenses`, {
                         data: {
                             selectedIds
                         }
@@ -249,7 +250,7 @@ const Records = () => {
                 <div className="h-[120vh] bg-[#fafbfd] w-1/5 p-3 rounded-md flex flex-col gap-[24px]">
                     <h5 className="text-2xl font-bold">Records</h5>
                     <button className="rounded-full px-3 py-1 bg-[#FFB74D] text-white" onClick={() => openModal()}>+ Add</button>
-                    <label for="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                    {/* <label for="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                     <div className="relative">
                         <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                             <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
@@ -258,7 +259,7 @@ const Records = () => {
                         </div>
                         <input type="search" id="default-search" className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                         <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
-                    </div>
+                    </div> */}
                     <div classNameName="flex flex-col px-3 py-1 gap-2">
                         <p>Filter Transactions</p>
                         <select value={filterTransactions} id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"

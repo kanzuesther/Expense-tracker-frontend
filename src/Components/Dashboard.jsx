@@ -10,6 +10,7 @@ import axios from "axios"
 import { API_URL } from "../constants"
 import IconRenderer from "./IconRenderer"
 import { categories } from "./IconSelector/iconNames"
+import axiosInstance from "../utils/axiosInstance"
 
 
 const Dashboard = () => {
@@ -26,7 +27,7 @@ function closeModal() {
 }
 
 useEffect(() => {
-    axios.get(`${API_URL}/api/v1/get-cashreserves`)
+    axiosInstance.get(`${API_URL}/api/v1/get-cashreserves`)
         .then((response) => {
             console.log("Cash reserves gotten from API")
             console.log(response.data);

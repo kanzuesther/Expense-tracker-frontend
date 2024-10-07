@@ -8,10 +8,12 @@ import { color } from 'chart.js/helpers';
 import { useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import { useState } from 'react';
+import { useContext } from 'react';
+import { AppContext } from '../context/appContext';
 
 
 const Login = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isError,setIsError] = useState({
@@ -23,6 +25,8 @@ const Login = () => {
         message: ''
     });
 
+    const {setUser} = useContext(AppContext);
+
     axios.defaults.withCredentials = true;
 
     const handleSubmit = (e) => {
@@ -32,10 +36,13 @@ const Login = () => {
             password,
         }) .then(response =>{
             if(response.status === 200 || response.status === 201){
+                console.log(`The data is`, response.data);
                 setIsSuccess({
                     status: true,
                     message: response.data?.message
-                })
+                });
+                console.log('In Login.jsx, setting user to ', response.data.data);
+                setUser(response.data.data);
                 setTimeout(()=>{
                     setIsSuccess({status: false, message: ''});
                     navigate('/dashboard')

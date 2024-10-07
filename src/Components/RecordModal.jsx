@@ -7,6 +7,7 @@ import { Modal } from "flowbite-react";
 import { FaArrowRight } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import axiosInstance from "../utils/axiosInstance";
 
 const RecordModal = ({
     isOpen,
@@ -31,14 +32,6 @@ const RecordModal = ({
     setCategory,
     id = null
 }) => {
-    // const [amountState, setAmount] = useState(amount);
-    // const [accountState, setAccount] = useState(account);
-    // const [currencyState, setCurrency] = useState(currency);
-    // const [typeState, setType] = useState(type);
-    // const [categoryState, setCategory] = useState(category);
-    // const [targetAccountState, setTargetAccount] = useState(targetAccount);
-    // const [date, setDate] = useState(new Date(date));
-
     const [backgroundColor, setBackgroundColor] = useState('#3C5A64');
     const [label, setLabel] = useState('');
     const [time, setTime] = useState('');
@@ -59,10 +52,10 @@ const RecordModal = ({
         let method, url;
 
         if (!id) {
-            method = axios.post;
+            method = axiosInstance.post;
             url = `${API_URL}/api/v1/add-expense`;
         } else {
-            method = axios.put;
+            method = axiosInstance.put;
             url = `${API_URL}/api/v1/update-expense/${id}`;
         }
 
